@@ -450,21 +450,6 @@
         </div>
     </div>
 
-    <script>
-        // 按钮点击事件
-        document.querySelectorAll('.nav-button').forEach(button => {
-            button.addEventListener('click', function() {
-                alert('您点击了：' + this.textContent);
-            });
-        });
 
-        // 新闻项点击事件
-        document.querySelectorAll('.news-item').forEach(item => {
-            item.addEventListener('click', function() {
-                const title = this.querySelector('.news-title a').textContent;
-                alert('您点击了新闻：' + title.substring(0, 20) + '...');
-            });
-        });
-    </script>
 </body>
 </html>
