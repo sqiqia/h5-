@@ -12,339 +12,168 @@
         }
 
         body {
-            font-family: "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        /* 背景装饰圆圈 */
-        .bg-decoration {
-            position: fixed;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            z-index: 0;
-            animation: float 20s infinite ease-in-out;
-        }
-
-        .bg-decoration:nth-child(1) {
-            width: 400px;
-            height: 400px;
-            top: -100px;
-            right: -100px;
-            animation-delay: 0s;
-        }
-
-        .bg-decoration:nth-child(2) {
-            width: 300px;
-            height: 300px;
-            bottom: -50px;
-            left: -50px;
-            animation-delay: 5s;
-        }
-
-        .bg-decoration:nth-child(3) {
-            width: 200px;
-            height: 200px;
-            top: 50%;
-            left: 30%;
-            animation-delay: 10s;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-30px) rotate(180deg); }
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            font-size: 14px;
+            line-height: 1.6;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-            position: relative;
-            z-index: 1;
-            backdrop-filter: blur(10px);
-        }
-
-        /* 顶部装饰区域 */
-        .header-decorative {
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #667eea 100%);
-            height: 12px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .header-decorative::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
-            animation: shine 3s infinite;
-        }
-
-        @keyframes shine {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-
-        /* 顶部区域 */
-        .header-section {
-            padding: 50px;
             background: white;
-            position: relative;
+            min-height: 100vh;
         }
 
-        .header-section::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #667eea, transparent);
+        /* 顶部信息栏 - 仿照央广网风格 */
+        .header-info-bar {
+            background: #f8f8f8;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 8px 20px;
+            font-size: 12px;
+            color: #666;
         }
 
-        .header-title {
-            font-size: 42px;
-            color: #333;
-            margin-bottom: 40px;
-            font-weight: 800;
-            letter-spacing: 2px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .header-icon {
-            display: inline-block;
-            font-size: 48px;
+        .header-info-bar span {
             margin-right: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
-        .header-info {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+        /* 导航栏 - 仿照央广网导航风格 */
+        .nav-bar {
+            background: #0056b3;
+            height: 40px;
+            line-height: 40px;
         }
 
-        .info-line {
-            display: flex;
-            align-items: center;
-            font-size: 17px;
-            color: #555;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 20px 30px;
-            border-radius: 12px;
-            border-left: 5px solid #667eea;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
         }
 
-        .info-line:hover {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            transform: translateX(10px) scale(1.02);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-        }
-
-        .info-line:hover .info-label,
-        .info-line:hover .info-value {
+        .nav-bar a {
             color: white;
+            text-decoration: none;
+            padding: 0 15px;
+            font-size: 14px;
+            margin-right: 5px;
         }
 
-        .info-label {
-            font-weight: 700;
-            color: #667eea;
-            margin-right: 15px;
-            min-width: 130px;
-            font-size: 18px;
+        .nav-bar a:hover {
+            background: #004494;
         }
 
-        .info-value {
+        /* 主要内容区域 */
+        .main-content {
+            padding: 20px;
+        }
+
+        /* 顶部标题区 */
+        .top-header {
+            border-bottom: 2px solid #0056b3;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .top-header h1 {
+            font-size: 24px;
             color: #333;
-            font-weight: 600;
-            font-size: 17px;
+            font-weight: bold;
+            margin-bottom: 10px;
         }
 
-        /* 按钮区域 - 始终左右排列 */
+        .info-section {
+            background: #f9f9f9;
+            padding: 15px;
+            border-left: 3px solid #0056b3;
+        }
+
+        .info-row {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .info-row strong {
+            color: #0056b3;
+            font-weight: bold;
+        }
+
+        /* 按钮区域 - 仿照央广网链接风格 */
         .button-section {
-            padding: 60px;
-            background: white;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 50px;
-            flex-direction: row !important;
-            flex-wrap: nowrap !important;
-            position: relative;
-        }
-
-        .button-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80%;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, #e0e0e0, transparent);
-        }
-
-        .button-section::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80%;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, #e0e0e0, transparent);
+            gap: 30px;
+            margin: 20px 0;
+            padding: 15px 0;
+            border-bottom: 1px solid #e0e0e0;
         }
 
         .nav-button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 30px 60px;
-            font-size: 1.6em;
-            font-weight: 700;
-            border-radius: 50px;
+            background: #f0f0f0;
+            color: #333;
+            border: 1px solid #ccc;
+            padding: 10px 30px;
+            font-size: 14px;
+            font-weight: bold;
             cursor: pointer;
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-            min-width: 200px;
-            max-width: 280px;
-            width: 50%;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .nav-button::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
-            transform: scale(0);
-            transition: transform 0.6s ease;
-        }
-
-        .nav-button:hover::before {
-            transform: scale(1);
+            transition: all 0.2s;
+            min-width: 120px;
+            text-align: center;
         }
 
         .nav-button:hover {
-            transform: translateY(-8px) scale(1.05);
-            box-shadow: 0 20px 50px rgba(102, 126, 234, 0.6);
+            background: #0056b3;
+            color: white;
+            border-color: #0056b3;
         }
 
-        .nav-button:active {
-            transform: translateY(-5px) scale(1.02);
-        }
-
-        /* 最新动态区域 */
-        .latest-news-section {
-            padding: 60px;
+        /* 新闻列表 - 仿照央广网新闻列表风格 */
+        .news-section {
             background: white;
         }
 
-        .section-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 50px;
-        }
-
         .section-title {
-            font-size: 32px;
-            color: #333;
-            font-weight: 800;
-            position: relative;
-            padding-left: 25px;
-            letter-spacing: 1px;
-        }
-
-        .section-title::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 6px;
-            height: 35px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 4px;
-        }
-
-        .news-count {
-            margin-left: 25px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 8px 20px;
-            border-radius: 25px;
             font-size: 16px;
-            font-weight: 700;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            font-weight: bold;
+            color: #333;
+            border-left: 4px solid #0056b3;
+            padding-left: 10px;
+            margin: 20px 0 15px 0;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e0e0e0;
         }
 
         .news-list {
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
+            list-style: none;
         }
 
         .news-item {
             display: flex;
+            padding: 12px 0;
+            border-bottom: 1px dotted #ccc;
             align-items: center;
-            padding: 30px;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-radius: 18px;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 3px solid transparent;
-            gap: 30px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+            transition: background 0.2s;
         }
 
         .news-item:hover {
-            transform: translateX(15px);
-            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.2);
-            border-color: #667eea;
-            background: white;
+            background: #f9f9f9;
         }
 
         .news-icon {
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #0056b3 0%, #003d82 100%);
+            color: white;
+            border-radius: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 18px;
+            font-size: 12px;
             font-weight: bold;
             text-align: center;
             flex-shrink: 0;
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-            transition: all 0.4s ease;
-        }
-
-        .news-item:hover .news-icon {
-            transform: scale(1.15) rotate(8deg);
-            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.6);
+            margin-right: 15px;
         }
 
         .news-content {
@@ -352,308 +181,273 @@
         }
 
         .news-title {
-            font-size: 19px;
+            font-size: 14px;
             color: #333;
-            margin-bottom: 12px;
-            font-weight: 700;
-            line-height: 1.6;
-            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+            line-height: 1.5;
+        }
+
+        .news-title a {
+            color: #333;
+            text-decoration: none;
+        }
+
+        .news-title a:hover {
+            color: #0056b3;
+            text-decoration: underline;
         }
 
         .news-info {
-            display: flex;
-            align-items: center;
-            gap: 25px;
-            font-size: 15px;
-            color: #666;
-        }
-
-        .news-info span {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            font-size: 12px;
+            color: #999;
         }
 
         .news-date {
-            font-size: 15px;
+            font-size: 12px;
             color: #999;
             text-align: right;
-            min-width: 130px;
-            background: white;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-weight: 600;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            min-width: 80px;
+            white-space: nowrap;
         }
 
-        /* 页脚 */
+        /* 侧边栏 - 仿照央广网侧边栏风格 */
+        .sidebar {
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            border-bottom: 2px solid #0056b3;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-list {
+            list-style: none;
+        }
+
+        .sidebar-item {
+            padding: 8px 0;
+            border-bottom: 1px dotted #ccc;
+            font-size: 13px;
+        }
+
+        .sidebar-item a {
+            color: #333;
+            text-decoration: none;
+        }
+
+        .sidebar-item a:hover {
+            color: #0056b3;
+        }
+
+        /* 页脚 - 仿照央广网页脚风格 */
         .footer {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 50px;
+            background: #f8f8f8;
+            border-top: 3px solid #0056b3;
+            padding: 20px;
             text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .footer::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-            animation: footerShine 4s infinite;
-        }
-
-        @keyframes footerShine {
-            0% { left: -100%; }
-            100% { left: 100%; }
+            margin-top: 30px;
         }
 
         .footer-content {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 40px;
-            flex-wrap: wrap;
-            position: relative;
-            z-index: 1;
+            font-size: 12px;
+            color: #666;
+            line-height: 1.8;
         }
 
-        .footer p {
-            margin: 8px 0;
-            font-size: 16px;
-            opacity: 0.95;
-            font-weight: 500;
+        .footer-content p {
+            margin: 5px 0;
         }
 
-        .footer-divider {
-            width: 3px;
-            height: 25px;
-            background: rgba(255,255,255,0.6);
-            border-radius: 2px;
+        /* 更多链接样式 - 仿照央广网 */
+        .more-link {
+            font-size: 12px;
+            color: #0056b3;
+            text-decoration: none;
+            float: right;
         }
 
-        /* 动画效果 */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .more-link:hover {
+            text-decoration: underline;
         }
-
-        .news-item {
-            animation: fadeInUp 0.7s ease forwards;
-            opacity: 0;
-        }
-
-        .news-item:nth-child(1) { animation-delay: 0.1s; }
-        .news-item:nth-child(2) { animation-delay: 0.2s; }
-        .news-item:nth-child(3) { animation-delay: 0.3s; }
-        .news-item:nth-child(4) { animation-delay: 0.4s; }
-        .news-item:nth-child(5) { animation-delay: 0.5s; }
-        .news-item:nth-child(6) { animation-delay: 0.6s; }
-        .news-item:nth-child(7) { animation-delay: 0.7s; }
 
         /* 响应式设计 */
         @media (max-width: 768px) {
             .button-section {
-                gap: 25px;
-                padding: 40px 30px;
+                flex-direction: column;
+                gap: 10px;
             }
 
             .nav-button {
-                min-width: 150px;
-                max-width: 200px;
-                padding: 25px 40px;
-                font-size: 1.3em;
-            }
-
-            .header-section {
-                padding: 35px 30px;
-            }
-
-            .header-title {
-                font-size: 32px;
-            }
-
-            .latest-news-section {
-                padding: 35px 30px;
+                width: 100%;
             }
 
             .news-item {
                 flex-direction: column;
                 text-align: center;
-                gap: 20px;
-                padding: 25px;
             }
 
-            .news-info {
-                justify-content: center;
+            .news-icon {
+                margin: 0 auto 10px auto;
             }
 
             .news-date {
                 text-align: center;
-                background: transparent;
-                padding: 0;
-                box-shadow: none;
-            }
-
-            .footer-content {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            .footer-divider {
-                display: none;
-            }
-
-            .bg-decoration {
-                display: none;
+                margin-top: 5px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- 背景装饰 -->
-    <div class="bg-decoration"></div>
-    <div class="bg-decoration"></div>
-    <div class="bg-decoration"></div>
-
     <div class="container">
-        <!-- 顶部装饰 -->
-        <div class="header-decorative"></div>
+        <!-- 顶部信息栏 -->
+        <div class="header-info-bar">
+            <span>执行协会：西部健康科普促进会</span>
+            <span>合作媒体：央广网-重庆频道</span>
+        </div>
 
-        <!-- 顶部信息区域 -->
-        <div class="header-section">
-            <h1 class="header-title">
-                <span class="header-icon">🏥</span>西部健康科普促进会
-            </h1>
-            <div class="header-info">
-                <div class="info-line">
-                    <span class="info-label">执行协会：</span>
-                    <span class="info-value">西部健康科普促进会</span>
-                </div>
-                <div class="info-line">
-                    <span class="info-label">合作媒体：</span>
-                    <span class="info-value">央广网-重庆频道</span>
-                </div>
+        <!-- 导航栏 -->
+        <div class="nav-bar">
+            <div class="nav-content">
+                <a href="#">首页</a>
+                <a href="#">新闻中心</a>
+                <a href="#">健康科普</a>
+                <a href="#">视频专区</a>
+                <a href="#">活动预告</a>
+                <a href="#">专家解读</a>
+                <a href="#">政策法规</a>
+                <a href="#">联系我们</a>
             </div>
         </div>
 
-        <!-- 按钮区域 - 始终左右排列 -->
-        <div class="button-section">
-            <button class="nav-button">📰 图文</button>
-            <button class="nav-button">🎬 视频</button>
-        </div>
-
-        <!-- 最新动态区域 -->
-        <div class="latest-news-section">
-            <div class="section-header">
-                <h2 class="section-title">最新动态</h2>
-                <span class="news-count">7篇内容</span>
+        <!-- 主要内容区域 -->
+        <div class="main-content">
+            <!-- 顶部标题 -->
+            <div class="top-header">
+                <h1>西部健康科普促进会</h1>
+                <div class="info-section">
+                    <div class="info-row"><strong>执行协会：</strong>西部健康科普促进会</div>
+                    <div class="info-row"><strong>合作媒体：</strong>央广网-重庆频道</div>
+                </div>
             </div>
-            <div class="news-list">
-                <!-- 新闻项1 -->
-                <div class="news-item">
-                    <div class="news-icon">新闻</div>
-                    <div class="news-content">
-                        <div class="news-title">四川省市场监管局安全总监余德仲一行莅临鲸小仓达州项目考察交流</div>
-                        <div class="news-info">
-                            <span>👁️ 阅读：152</span>
-                        </div>
-                    </div>
-                    <div class="news-date">2022-11-09</div>
-                </div>
 
-                <!-- 新闻项2 -->
-                <div class="news-item">
-                    <div class="news-icon">项目</div>
-                    <div class="news-content">
-                        <div class="news-title">达州高新区召开食安高新暨生活必需品安全供应链建设项目推进会</div>
-                        <div class="news-info">
-                            <span>👁️ 阅读：58</span>
-                        </div>
-                    </div>
-                    <div class="news-date">2022-10-28</div>
-                </div>
+            <!-- 按钮区域 - 左右排列 -->
+            <div class="button-section">
+                <button class="nav-button">图文</button>
+                <button class="nav-button">视频</button>
+            </div>
 
-                <!-- 新闻项3 -->
-                <div class="news-item">
-                    <div class="news-icon">会议</div>
-                    <div class="news-content">
-                        <div class="news-title">达州市市场监督管理局召开达州市市属学校落实主体责任会议</div>
-                        <div class="news-info">
-                            <span>👁️ 阅读：83</span>
-                        </div>
-                    </div>
-                    <div class="news-date">2022-10-27</div>
-                </div>
+            <!-- 新闻列表 -->
+            <div class="news-section">
+                <h2 class="section-title">
+                    最新动态
+                    <a href="#" class="more-link">更多&gt;&gt;</a>
+                </h2>
 
-                <!-- 新闻项4 -->
-                <div class="news-item">
-                    <div class="news-icon">考察</div>
-                    <div class="news-content">
-                        <div class="news-title">达州市高新区党工委委员、管委会李江山副主任一行莅临达州项目考察</div>
-                        <div class="news-info">
-                            <span>👁️ 阅读：88</span>
+                <ul class="news-list">
+                    <li class="news-item">
+                        <div class="news-icon">新闻</div>
+                        <div class="news-content">
+                            <div class="news-title">
+                                <a href="#">四川省市场监管局安全总监余德仲一行莅临鲸小仓达州项目考察交流</a>
+                            </div>
+                            <div class="news-info">阅读量：152</div>
                         </div>
-                    </div>
-                    <div class="news-date">2022-09-22</div>
-                </div>
+                        <div class="news-date">2022-11-09</div>
+                    </li>
 
-                <!-- 新闻项5 -->
-                <div class="news-item">
-                    <div class="news-icon">调研</div>
-                    <div class="news-content">
-                        <div class="news-title">达州市市场监管局党组成员、副局长，市食安办副主任刘静婉一行莅临</div>
-                        <div class="news-info">
-                            <span>👁️ 阅读：25</span>
+                    <li class="news-item">
+                        <div class="news-icon">项目</div>
+                        <div class="news-content">
+                            <div class="news-title">
+                                <a href="#">达州高新区召开食安高新暨生活必需品安全供应链建设项目推进会</a>
+                            </div>
+                            <div class="news-info">阅读量：58</div>
                         </div>
-                    </div>
-                    <div class="news-date">2022-09-22</div>
-                </div>
+                        <div class="news-date">2022-10-28</div>
+                    </li>
 
-                <!-- 新闻项6 -->
-                <div class="news-item">
-                    <div class="news-icon">签约</div>
-                    <div class="news-content">
-                        <div class="news-title">喜报！鲸小仓达州项目迎来合作方集中签约！</div>
-                        <div class="news-info">
-                            <span>👁️ 阅读：161</span>
+                    <li class="news-item">
+                        <div class="news-icon">会议</div>
+                        <div class="news-content">
+                            <div class="news-title">
+                                <a href="#">达州市市场监督管理局召开达州市市属学校落实主体责任会议</a>
+                            </div>
+                            <div class="news-info">阅读量：83</div>
                         </div>
-                    </div>
-                    <div class="news-date">2022-08-05</div>
-                </div>
+                        <div class="news-date">2022-10-27</div>
+                    </li>
 
-                <!-- 新闻项7 -->
-                <div class="news-item">
-                    <div class="news-icon">交流</div>
-                    <div class="news-content">
-                        <div class="news-title">资阳资味供应链管理有限公司吴尚董事长一行莅临鲸小仓达州项目考察交流</div>
-                        <div class="news-info">
-                            <span>👁️ 阅读：107</span>
+                    <li class="news-item">
+                        <div class="news-icon">考察</div>
+                        <div class="news-content">
+                            <div class="news-title">
+                                <a href="#">达州市高新区党工委委员、管委会李江山副主任一行莅临达州项目考察</a>
+                            </div>
+                            <div class="news-info">阅读量：88</div>
                         </div>
-                    </div>
-                    <div class="news-date">2022-07-01</div>
-                </div>
+                        <div class="news-date">2022-09-22</div>
+                    </li>
+
+                    <li class="news-item">
+                        <div class="news-icon">调研</div>
+                        <div class="news-content">
+                            <div class="news-title">
+                                <a href="#">达州市市场监管局党组成员、副局长，市食安办副主任刘静婉一行莅临</a>
+                            </div>
+                            <div class="news-info">阅读量：25</div>
+                        </div>
+                        <div class="news-date">2022-09-22</div>
+                    </li>
+
+                    <li class="news-item">
+                        <div class="news-icon">签约</div>
+                        <div class="news-content">
+                            <div class="news-title">
+                                <a href="#">喜报！鲸小仓达州项目迎来合作方集中签约！</a>
+                            </div>
+                            <div class="news-info">阅读量：161</div>
+                        </div>
+                        <div class="news-date">2022-08-05</div>
+                    </li>
+
+                    <li class="news-item">
+                        <div class="news-icon">交流</div>
+                        <div class="news-content">
+                            <div class="news-title">
+                                <a href="#">资阳资味供应链管理有限公司吴尚董事长一行莅临鲸小仓达州项目考察交流</a>
+                            </div>
+                            <div class="news-info">阅读量：107</div>
+                        </div>
+                        <div class="news-date">2022-07-01</div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- 侧边栏 -->
+            <div class="sidebar">
+                <h3 class="sidebar-title">热点推荐</h3>
+                <ul class="sidebar-list">
+                    <li class="sidebar-item"><a href="#">健康科普：春季养生指南</a></li>
+                    <li class="sidebar-item"><a href="#">专家解读：慢性病预防</a></li>
+                    <li class="sidebar-item"><a href="#">政策法规：健康中国2030</a></li>
+                    <li class="sidebar-item"><a href="#">活动预告：健康讲座</a></li>
+                </ul>
             </div>
         </div>
 
         <!-- 页脚 -->
         <div class="footer">
             <div class="footer-content">
-                <p>© 2024 西部健康科普促进会 版权所有</p>
-                <div class="footer-divider"></div>
-                <p>执行协会：西部健康科普促进会</p>
-                <div class="footer-divider"></div>
-                <p>合作媒体：央广网-重庆频道</p>
+                <p>版权所有 © 2024 西部健康科普促进会</p>
+                <p>执行协会：西部健康科普促进会 | 合作媒体：央广网-重庆频道</p>
+                <p>地址：重庆市 | 联系电话：023-xxxx-xxxx | 邮箱：contact@whpa.org</p>
             </div>
         </div>
     </div>
@@ -662,31 +456,16 @@
         // 按钮点击事件
         document.querySelectorAll('.nav-button').forEach(button => {
             button.addEventListener('click', function() {
-                const buttonText = this.textContent.replace(/[^\u4e00-\u9fa5]/g, '');
-                alert('您点击了：' + buttonText);
+                alert('您点击了：' + this.textContent);
             });
         });
 
         // 新闻项点击事件
         document.querySelectorAll('.news-item').forEach(item => {
             item.addEventListener('click', function() {
-                const title = this.querySelector('.news-title').textContent;
+                const title = this.querySelector('.news-title a').textContent;
                 alert('您点击了新闻：' + title.substring(0, 20) + '...');
             });
-        });
-
-        // 添加滚动动画
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.animationPlayState = 'running';
-                }
-            });
-        }, { threshold: 0.1 });
-
-        document.querySelectorAll('.news-item').forEach(item => {
-            item.style.animationPlayState = 'paused';
-            observer.observe(item);
         });
     </script>
 </body>
