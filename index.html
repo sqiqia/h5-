@@ -56,11 +56,26 @@
             padding: 20px;
         }
 
-        /* 顶部标题区 */
+        /* 顶部标题区 - 居中对齐并添加logo */
         .top-header {
             border-bottom: 2px solid #0056b3;
             padding-bottom: 15px;
             margin-bottom: 20px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-container {
+            margin-bottom: 10px;
+        }
+
+        .logo-container img {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
         }
 
         .top-header h1 {
@@ -300,76 +315,63 @@
             }
 
             .news-date {
-                text-align: left;
-                margin-top: 5px;
+                display: none;
+            }
+
+            .top-header h1 {
+                font-size: 20px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="container">
+        <!-- 导航栏 -->
         <div class="nav-bar">
             <div class="nav-content">
-                <a href="#">首页</a>
+                <a href="https://www.cnr.cn/chongqing/gyjk/" target="_blank">央广网健康频道</a>
+                <a href="https://www.cnr.cn/chongqing/" target="_blank">央广网重庆频道</a>
+                <a href="https://www.cnr.cn/" target="_blank">央广网首页</a>
             </div>
         </div>
 
         <!-- 主要内容区域 -->
         <div class="main-content">
-            <!-- 顶部标题 -->
+            <!-- 顶部标题区 - 居中对齐并添加logo -->
             <div class="top-header">
+                <div class="logo-container">
+                    <img src="/logo.png" alt="西部健康科普促进会Logo">
+                </div>
                 <h1>西部健康科普促进会</h1>
                 <div class="info-section">
-                    <div class="info-row"><strong>执行协会：</strong>西部健康科普促进会</div>
-                    <div class="info-row"><strong>合作媒体：</strong>央广网-重庆频道</div>
+                    <div class="info-row"><strong>成立时间：</strong>2023年</div>
+                    <div class="info-row"><strong>业务主管单位：</strong>重庆市科学技术协会</div>
+                    <div class="info-row"><strong>登记管理机关：</strong>重庆市民政局</div>
+                    <div class="info-row"><strong>主要业务：</strong>健康科普宣传、学术交流、健康教育培训</div>
                 </div>
             </div>
 
-            <!-- 按钮区域 - 左右排列 -->
+            <!-- 按钮区域 - 已删除"首页"按钮 -->
             <div class="button-section">
-                <button class="nav-button" onclick="window.location.href='https://www.cnr.cn/zhmyh/'">图文</button>
-                <button class="nav-button" onclick="window.location.href='https://tv.cctv.com/2026/03/15/VIDEJBXLB6dZrzz2ltFlo4OS260315.shtml?spm=C59377.PwyJmr97iMsh.EOGPmXWzkpJU.37'">视频</button>
+                <button class="nav-button" onclick="window.open('https://www.cnr.cn/chongqing/gyjk/', '_blank')">健康资讯</button>
+                <button class="nav-button" onclick="window.open('https://www.cnr.cn/chongqing/nykj/', '_blank')">科普活动</button>
+                <button class="nav-button" onclick="window.open('https://www.cnr.cn/2014jkpd/', '_blank')">健康专题</button>
+                <button class="nav-button" onclick="window.open('https://www.cnr.cn/chongqing/gyjk/', '_blank')">联系我们</button>
             </div>
 
             <!-- 新闻列表 -->
             <div class="news-section">
-                <h2 class="section-title">
-                    最新动态
-                </h2>
-
+                <h2 class="section-title">最新动态 <a href="https://www.cnr.cn/chongqing/gyjk/" class="more-link" target="_blank">更多 &gt;&gt;</a></h2>
                 <ul class="news-list">
                     <li class="news-item">
                         <div class="news-icon">健康</div>
                         <div class="news-content">
                             <div class="news-title">
-                                <a href="https://www.cnr.cn/chongqing/gyjk/20260314/t20260314_527551740.shtml" target="_blank">生命速递 跨省危重患儿安全完成高铁转运</a>
+                                <a href="https://www.cnr.cn/chongqing/gyjk/20260314/t20260314_527551598.shtml" target="_blank">重庆两江新区第二人民医院启动女性健康关爱月活动</a>
                             </div>
                             <div class="news-info">来源：央广网-重庆频道</div>
                         </div>
                         <div class="news-date">2026-03-14</div>
-                    </li>
-
-                    <li class="news-item">
-                        <div class="news-icon">科普</div>
-                        <div class="news-content">
-                            <div class="news-title">
-                                <a href="https://www.cnr.cn/chongqing/nykj/20260316/t20260316_527553286.shtml" target="_blank">海波啵讲科普启新篇 少年探秘超声科技魅力</a>
-                            </div>
-                            <div class="news-info">来源：央广网-重庆频道</div>
-                        </div>
-                        <div class="news-date">2026-03-16</div>
-                    </li>
-
-                    <li class="news-item">
-                        <div class="news-icon">活动</div>
-                        <div class="news-content">
-                            <div class="news-title">
-                                <a href="https://www.cnr.cn/chongqing/nykj/20260313/t20260313_527550964.shtml" target="_blank">"渝你共美·共护城区一抹绿"科普活动举行</a>
-                            </div>
-                            <div class="news-info">来源：央广网-重庆频道</div>
-                        </div>
-                        <div class="news-date">2026-03-13</div>
                     </li>
 
                     <li class="news-item">
@@ -384,7 +386,18 @@
                     </li>
 
                     <li class="news-item">
-                        <div class="news-icon">健康</div>
+                        <div class="news-icon">科普</div>
+                        <div class="news-content">
+                            <div class="news-title">
+                                <a href="https://www.cnr.cn/chongqing/nykj/20260313/t20260313_527550964.shtml" target="_blank">"渝你共美·共护城区一抹绿"科普活动举行</a>
+                            </div>
+                            <div class="news-info">来源：央广网-重庆频道</div>
+                        </div>
+                        <div class="news-date">2026-03-13</div>
+                    </li>
+
+                    <li class="news-item">
+                        <div class="news-icon">医院</div>
                         <div class="news-content">
                             <div class="news-title">
                                 <a href="https://www.cnr.cn/chongqing/gyjk/20260311/t20260311_527549007.shtml" target="_blank">重医附二院深耕无创治癌</a>
