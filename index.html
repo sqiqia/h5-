@@ -26,19 +26,6 @@
             min-height: 100vh;
         }
 
-        /* 顶部信息栏 - 仿照央广网风格 */
-        .header-info-bar {
-            background: #f8f8f8;
-            border-bottom: 1px solid #e0e0e0;
-            padding: 8px 20px;
-            font-size: 12px;
-            color: #666;
-        }
-
-        .header-info-bar span {
-            margin-right: 15px;
-        }
-
         /* 导航栏 - 仿照央广网导航风格 */
         .nav-bar {
             background: #0056b3;
@@ -282,25 +269,38 @@
         /* 响应式设计 */
         @media (max-width: 768px) {
             .button-section {
-                flex-direction: column;
+                flex-direction: row;
                 gap: 10px;
+                justify-content: flex-start;
             }
 
             .nav-button {
-                width: 100%;
+                flex: 1;
+                min-width: auto;
+                padding: 10px 15px;
+                font-size: 13px;
             }
 
             .news-item {
-                flex-direction: column;
-                text-align: center;
+                flex-direction: row;
+                text-align: left;
+                align-items: flex-start;
             }
 
             .news-icon {
-                margin: 0 auto 10px auto;
+                margin: 0 10px 0 0;
+                width: 50px;
+                height: 50px;
+                font-size: 11px;
+                flex-shrink: 0;
+            }
+
+            .news-content {
+                flex: 1;
             }
 
             .news-date {
-                text-align: center;
+                text-align: left;
                 margin-top: 5px;
             }
         }
@@ -308,19 +308,10 @@
 </head>
 <body>
     <div class="container">
-        <!-- 顶部信息栏 -->
-        <div class="header-info-bar">
-            <span>执行协会：西部健康科普促进会</span>
-            <span>合作媒体：央广网-重庆频道</span>
-        </div>
-
-        <!-- 导航栏 -->
+        <div class="container">
         <div class="nav-bar">
             <div class="nav-content">
                 <a href="#">首页</a>
-                <a href="#">新闻中心</a>
-                <a href="#">健康科普</a>
-                <a href="#">视频专区</a>
             </div>
         </div>
 
@@ -337,15 +328,14 @@
 
             <!-- 按钮区域 - 左右排列 -->
             <div class="button-section">
-                <button class="nav-button">图文</button>
-                <button class="nav-button">视频</button>
+                <button class="nav-button" onclick="window.location.href='https://www.cnr.cn/zhmyh/'">图文</button>
+                <button class="nav-button" onclick="window.location.href='https://tv.cctv.com/2026/03/15/VIDEJBXLB6dZrzz2ltFlo4OS260315.shtml?spm=C59377.PwyJmr97iMsh.EOGPmXWzkpJU.37'">视频</button>
             </div>
 
             <!-- 新闻列表 -->
             <div class="news-section">
                 <h2 class="section-title">
                     最新动态
-                    <a href="#" class="more-link">更多&gt;&gt;</a>
                 </h2>
 
                 <ul class="news-list">
@@ -443,9 +433,9 @@
         <!-- 页脚 -->
         <div class="footer">
             <div class="footer-content">
-                <p>版权所有 © 2024 西部健康科普促进会</p>
+                <p>版权所有 © 2026 西部健康科普促进会</p>
                 <p>执行协会：西部健康科普促进会 | 合作媒体：央广网-重庆频道</p>
-                <p>地址：重庆市 | 联系电话：023-xxxx-xxxx | 邮箱：contact@whpa.org</p>
+                <p>地址：重庆市 | 联系电话：023-xxxx-xxxx | 邮箱：xxx@xxx</p>
             </div>
         </div>
     </div>
