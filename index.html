@@ -91,7 +91,6 @@ window.addEventListener('load',function(){
   .empty-state svg{width:56px;height:56px;stroke:var(--brd2);fill:none;margin-bottom:16px;stroke-width:1.2}
   .empty-state p{font-size:14px}
 
-  /* 环境错误提示 */
   .env-error{display:none;position:fixed;inset:0;z-index:9999;background:rgba(255,255,255,.97);align-items:center;justify-content:center;padding:40px}
   .env-error.show{display:flex}
   .env-error-box{text-align:center;max-width:520px}
@@ -99,7 +98,7 @@ window.addEventListener('load',function(){
   .env-error-box .icon svg{width:36px;height:36px;stroke:var(--err);fill:none;stroke-width:1.5}
   .env-error-box h2{font-size:22px;font-weight:700;margin-bottom:12px;color:var(--fg)}
   .env-error-box p{font-size:15px;color:var(--fg2);line-height:1.8;margin-bottom:20px}
-  .env-error-box code{display:block;background:var(--bg2);border:1px solid var(--brd);border-radius:var(--rs);padding:14px 18px;font-size:13px;color:var(--accent);text-align:left;word-break:break-all;margin-bottom:16px;font-family:'DM Mono',monospace}
+  .env-error-box code{display:block;background:var(--bg2);border:1px solid var(--brd);border-radius:var(--rs);padding:14px 18px;font-size:13px;color:var(--accent);text-align:left;word-break:break-all;margin-bottom:16px;font-family:monospace}
   .env-error-box .note{font-size:13px;color:var(--fg3);line-height:1.7}
 
   .reader{display:none;position:fixed;inset:0;z-index:100;background:var(--bg);flex-direction:column;animation:rfi .3s ease-out}
@@ -139,7 +138,6 @@ window.addEventListener('load',function(){
   .reader-body blockquote{border-left:4px solid var(--accent);padding:6px 18px;margin:14px 0;background:#faf8f4;color:var(--paper-m);font-style:italic}
 
   .red-text{color:var(--red);font-weight:700}
-
   .yel-copy{display:inline;padding:2px 10px;border-radius:5px;background:rgba(200,150,10,.12);border:1px solid rgba(200,150,10,.3);color:#7a5c08;font-weight:500;cursor:pointer;transition:.2s;vertical-align:middle;margin:0 2px;line-height:1.7}
   .yel-copy:hover{background:rgba(200,150,10,.22);border-color:rgba(200,150,10,.5)}
   .yel-copy.copied{background:rgba(58,157,62,.1);border-color:rgba(58,157,62,.3);color:#2e7d32}
@@ -174,12 +172,11 @@ window.addEventListener('load',function(){
 <div class="bg-g"></div>
 <div class="toast-c" id="toastC"></div>
 
-<!-- 环境错误提示 -->
 <div class="env-error" id="envError">
   <div class="env-error-box">
     <div class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
     <h2 id="envTitle">无法在此环境中使用</h2>
-    <p id="envDesc">你当前可能正在 GitHub 文件预览页面中打开此文件。</p>
+    <p id="envDesc"></p>
     <code id="envUrl"></code>
     <p class="note">请复制上面的完整链接，在新标签页中直接打开即可正常使用。</p>
   </div>
@@ -228,39 +225,24 @@ window.addEventListener('load',function(){
 <script>
 /* ===== 环境检测 ===== */
 function checkEnv(){
-  // 检测是否在 iframe 沙箱中（GitHub 文件预览）
   try{
     if(window.self!==window.top){
-      // 在 iframe 中，检查是否有 sandbox 限制
       var frame=window.frameElement;
       if(frame&&(frame.getAttribute('sandbox')||'').indexOf('allow-same-origin')===-1){
-        showEnvError('iframe');
-        return false;
+        showEnvError('iframe');return false;
       }
     }
-  }catch(e){
-    // 跨域访问被拒绝 = 在受限 iframe 中
-    showEnvError('iframe');
-    return false;
-  }
-
-  // 检测 URL 是否是 GitHub 文件预览（非 Pages）
+  }catch(e){showEnvError('iframe');return false}
   if(location.hostname==='github.com'||location.hostname==='www.github.com'){
-    if(location.pathname.indexOf('/blob/')!==-1){
-      showEnvError('preview');
-      return false;
-    }
+    if(location.pathname.indexOf('/blob/')!==-1){showEnvError('preview');return false}
   }
-
   return true;
 }
-
 function showEnvError(type){
   var el=document.getElementById('envError');
   var title=document.getElementById('envTitle');
   var desc=document.getElementById('envDesc');
   var urlEl=document.getElementById('envUrl');
-
   if(type==='iframe'){
     title.textContent='请在浏览器中直接打开此页面';
     desc.textContent='你当前在嵌入框架中打开，文件上传功能被禁用。请复制下方链接，在新标签页中打开：';
@@ -272,23 +254,13 @@ function showEnvError(type){
     desc.textContent='无法加载文档解析所需的库，请检查网络连接后刷新页面。';
     urlEl.style.display='none';
   }
-
   if(type!=='cdn'){
-    // 构建 Pages 链接
-    var pagesUrl=location.href
-      .replace(/^https?:\/\/github\.com\//,'https://')
-      .replace(/\/blob\/[^/]+\//,'/');
-    urlEl.textContent=pagesUrl;
-    urlEl.style.display='block';
+    var pagesUrl=location.href.replace(/^https?:\/\/github\.com\//,'https://').replace(/\/blob\/[^/]+\//,'/');
+    urlEl.textContent=pagesUrl;urlEl.style.display='block';
   }
-
   el.classList.add('show');
 }
-
-/* ===== 环境检测通过后初始化 ===== */
-if(checkEnv()){
-  initApp();
-}
+if(checkEnv())initApp();
 
 function initApp(){
 'use strict';
@@ -328,22 +300,42 @@ function gw(parent,tag){return parent.getElementsByTagNameNS(W,tag)}
 function wval(el,attr){if(!el)return null;var v=el.getAttributeNS(W,attr);if(!v)v=el.getAttribute('w:'+attr);if(!v)v=el.getAttribute(attr);return v}
 function rembed(el){if(!el)return null;var v=el.getAttributeNS(R,'embed');if(!v)v=el.getAttribute('r:embed');return v}
 
+/* ===== 判断是否纯空白 ===== */
+function isBlank(text){return /^\s*$/.test(text)}
+
+/* ===== 检测填充色是否为黄色系 ===== */
+function isYellowFill(hex){
+  if(!hex)return false;
+  var h=hex.replace(/^#/,'');
+  if(h.length===4)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+  if(h.length!==6)return false;
+  var r=parseInt(h.substring(0,2),16),g=parseInt(h.substring(2,4),16),b=parseInt(h.substring(4,6),16);
+  return r>170&&g>150&&b<130;
+}
+
 function isRed(hex){
   if(!hex)return false;
-  hex=hex.replace(/^#/,'');
-  if(hex.length===4)hex=hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
-  if(hex.length!==6)return false;
-  var r=parseInt(hex.substring(0,2),16),g=parseInt(hex.substring(2,4),16),b=parseInt(hex.substring(4,6),16);
+  var h=hex.replace(/^#/,'');
+  if(h.length===4)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+  if(h.length!==6)return false;
+  var r=parseInt(h.substring(0,2),16),g=parseInt(h.substring(2,4),16),b=parseInt(h.substring(4,6),16);
   return r>150&&r>g*1.6&&r>b*1.6;
 }
 function isYellow(hlVal,shdFill){
   if(hlVal&&hlVal.toLowerCase()==='yellow')return true;
-  if(shdFill){
-    var h=shdFill.replace(/^#/,'');
-    if(h.length===4)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
-    if(h.length===6){var r=parseInt(h.substring(0,2),16),g=parseInt(h.substring(2,4),16),b=parseInt(h.substring(4,6),16);return r>170&&g>150&&b<130}
-  }
-  return false;
+  return isYellowFill(shdFill);
+}
+
+/* ===== 检测段落级黄色底纹 ===== */
+function isParagraphShadingYellow(para){
+  var pPr=gw(para,'pPr')[0];
+  if(!pPr)return false;
+  var shd=gw(pPr,'shd')[0];
+  if(!shd)return false;
+  var val=wval(shd,'val');
+  if(val&&val!=='clear')return false;
+  var fill=wval(shd,'fill');
+  return isYellowFill(fill);
 }
 
 uploadZone.addEventListener('click',function(e){if(!e.target.closest('.loader-o'))fileInput.click()});
@@ -361,9 +353,7 @@ function handleFile(file){
   if(!file.name.toLowerCase().endsWith('.docx')){toast('跳过非 .docx 文件: '+file.name,'err');return}
   if(file.size>50*1048576){toast('文件过大: '+file.name,'err');return}
   loader.classList.add('on');
-  file.arrayBuffer().then(function(buf){
-    return parseDocx(buf);
-  }).then(function(data){
+  file.arrayBuffer().then(function(buf){return parseDocx(buf)}).then(function(data){
     var id=++docIdCounter;
     docs.set(id,{name:file.name,size:file.size,date:file.lastModified,blocks:data.blocks,redCount:data.redCount,yelCount:data.yelCount});
     renderFileList();
@@ -410,7 +400,7 @@ function mergeAcrossBlocks(blocks){
         var item=content[i];
         if(item.type==='red'||item.type==='yel'){
           if(lastType===item.type&&lastRef){
-            // ★ 关键修复：把当前片段文字追加到上一个片段，然后删掉当前片段
+            // 同色连续：追加文本，删除当前片段
             lastRef.arr[lastRef.idx].text+=item.text;
             content.splice(i,1);
             i--;
@@ -418,7 +408,12 @@ function mergeAcrossBlocks(blocks){
             lastType=item.type;
             lastRef={arr:content,idx:i};
           }
+        }else if(item.type==='txt'&&isBlank(item.text)){
+          // ★ 修复：纯空白文本不打断合并，直接跳过
+          content.splice(i,1);
+          i--;
         }else{
+          // 有实际内容的普通文本才打断合并
           lastType=null;
           lastRef=null;
         }
@@ -427,7 +422,6 @@ function mergeAcrossBlocks(blocks){
   }
 }
 
-/* ===== 获取 block 中所有段落的 content 引用 ===== */
 function getParagraphs(block){
   var res=[];
   if(block.type==='p')res.push(block.content);
@@ -457,10 +451,9 @@ function parseDocx(buf){
         var rels=rDoc.getElementsByTagName('Relationship');
         var imgPromises=[];
         for(var i=0;i<rels.length;i++){
-          var rel=rels[i];
-          var type=rel.getAttribute('Type')||'';
-          if(type.indexOf('image')!==-1){
-            (function(rel){
+          (function(rel){
+            var type=rel.getAttribute('Type')||'';
+            if(type.indexOf('image')!==-1){
               var rId=rel.getAttribute('Id');
               var target=rel.getAttribute('Target')||'';
               if(target.indexOf('word/')!==0)target='word/'+target;
@@ -470,8 +463,8 @@ function parseDocx(buf){
                   images[rId]=URL.createObjectURL(blob);
                 }));
               }
-            })(rel);
-          }
+            }
+          })(rels[i]);
         }
         return Promise.all(imgPromises);
       }):Promise.resolve();
@@ -481,7 +474,7 @@ function parseDocx(buf){
         var redCount=0,yelCount=0;
         var blocks=[];
 
-        function parseRuns(parent,contentArr){
+        function parseRuns(parent,contentArr,paraYellow){
           var runs=gw(parent,'r');
           for(var ri=0;ri<runs.length;ri++){
             var run=runs[ri];
@@ -528,9 +521,12 @@ function parseDocx(buf){
             var yel=!red&&isYellow(hlVal,shdFill);
 
             if(red){
-              contentArr.push({type:'red',text});redCount++;
+              contentArr.push({type:'red',text:text});redCount++;
             }else if(yel){
-              contentArr.push({type:'yel',text});yelCount++;
+              contentArr.push({type:'yel',text:text});yelCount++;
+            }else if(paraYellow&&text.trim()){
+              // ★ 修复：段落级黄色底纹，非空文本视为黄色
+              contentArr.push({type:'yel',text:text});yelCount++;
             }else{
               contentArr.push({type:'txt',text:text,bold:bold,italic:italic,underline:underline,color:colorVal});
             }
@@ -551,7 +547,9 @@ function parseDocx(buf){
           var ln=child.localName;
           if(ln==='p'){
             var heading=getHeading(child);
-            var content=[];parseRuns(child,content);
+            // ★ 检测段落级黄色底纹
+            var paraYellow=isParagraphShadingYellow(child);
+            var content=[];parseRuns(child,content,paraYellow);
             blocks.push({type:'p',content:content,heading:heading});
           }else if(ln==='tbl'){
             var rows=[];
@@ -563,7 +561,8 @@ function parseDocx(buf){
                 var cellContent=[];
                 var ps=gw(tcs[tci],'p');
                 for(var pi=0;pi<ps.length;pi++){
-                  var content=[];parseRuns(ps[pi],content);
+                  var paraYellow=isParagraphShadingYellow(ps[pi]);
+                  var content=[];parseRuns(ps[pi],content,paraYellow);
                   cellContent.push({type:'p',content:content,heading:0});
                 }
                 cells.push(cellContent);
@@ -574,10 +573,8 @@ function parseDocx(buf){
           }
         }
 
-        // 跨段落合并连续同色
         mergeAcrossBlocks(blocks);
 
-        // 重新统计合并后的数量
         redCount=0;yelCount=0;
         for(var bi=0;bi<blocks.length;bi++){
           var bparas=getParagraphs(blocks[bi]);
@@ -660,12 +657,10 @@ function renderDoc(d){
   }
   readerBody.innerHTML=html||'<p style="color:var(--paper-m);text-align:center;padding:40px">文档内容为空</p>';
 
-  // 绑定黄色点击复制
   var yelEls=readerBody.querySelectorAll('.yel-copy');
   for(var i=0;i<yelEls.length;i++){
     (function(el){
       el.addEventListener('click',function(){
-        // ★ 关键修复：从 data-text 属性取完整文本（合并后的）
         copyText(el.getAttribute('data-text'));
         el.classList.add('copied');
         el.textContent='已复制';
@@ -689,7 +684,6 @@ function renderContent(content){
     }else if(c.type==='red'){
       html+='<span class="red-text">'+esc(c.text)+'</span>';
     }else if(c.type==='yel'){
-      // ★ 关键修复：data-text 存的是合并后的完整文本
       html+='<span class="yel-copy" data-text="'+esc(c.text)+'" title="点击复制">'+esc(c.text)+'</span>';
     }else if(c.type==='img'){
       html+='<img src="'+c.src+'" alt="图片">';
@@ -706,28 +700,16 @@ function renderContent(content){
 
 function copyText(text){
   if(navigator.clipboard&&navigator.clipboard.writeText){
-    navigator.clipboard.writeText(text).catch(function(){
-      fallbackCopy(text);
-    });
-  }else{
-    fallbackCopy(text);
-  }
+    navigator.clipboard.writeText(text).catch(function(){fallbackCopy(text)});
+  }else{fallbackCopy(text)}
   toast('已复制到剪贴板','ok');
 }
-
 function fallbackCopy(text){
-  var ta=document.createElement('textarea');
-  ta.value=text;
-  ta.style.cssText='position:fixed;opacity:0';
-  document.body.appendChild(ta);
-  ta.select();
-  document.execCommand('copy');
-  ta.remove();
+  var ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();
 }
 
 renderFileList();
-
-} // end initApp
+}
 </script>
 </body>
 </html>
