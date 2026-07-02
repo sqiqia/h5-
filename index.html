@@ -81,6 +81,7 @@
   .empty-state svg{width:56px;height:56px;stroke:var(--brd2);fill:none;margin-bottom:16px;stroke-width:1.2}
   .empty-state p{font-size:14px}
 
+  /* 阅读器 */
   .reader{display:none;position:fixed;inset:0;z-index:100;background:var(--bg);flex-direction:column;animation:rfi .3s ease-out}
   .reader.open{display:flex}
   @keyframes rfi{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
@@ -96,6 +97,7 @@
   .r-stat .dot.yl{background:var(--yel)}
   .r-stat .dot.gr{background:var(--ok)}
 
+  /* 内容区直接铺满，没有框 */
   .reader-body{flex:1;overflow-y:auto;padding:48px 64px;color:var(--paper-t);font-family:'Noto Serif SC',serif;font-size:15px;line-height:1.9}
   .reader-body::-webkit-scrollbar{width:8px}
   .reader-body::-webkit-scrollbar-track{background:transparent}
@@ -282,35 +284,253 @@ async function handleFile(file){
   }finally{loader.classList.remove('on')}
 }
 
-/* ========== 段落内合并连续同色 ========== */
-function mergeInParagraph(content){
-  const out=[];
-  for(const item of content){
-    if(item.type==='red'&&out.length>0&&out[out.length-1].type==='red'){
-      out[out.length-1].text+=item.text;
-    }else if(item.type==='yel'&&out.length>0&&out[out.length-1].type==='yel'){
-      out[out.length-1].text+=item.text;
-    }else{
-      out.push(item);
+async function parseDocx(buf){
+  const zip=await JSZip.loadAsync(buf);
+  const docXml=await zip.file('word/document.xml').async('text');
+  const parser=new DOMParser();
+  const doc=parser.parseFromString(docXml,'application/xml');
+
+  const images={};
+  const relsFile=zip.file('word/_rels/document.xml.rels');
+  if(relsFile){
+    const rXml=await relsFile.async('text');
+    const rDoc=parser.parseFromString(rXml,'application/xml');
+    const rels=rDoc.getElementsByTagName('Relationship');
+    for(const rel of rels){
+      const type=rel.getAttribute('Type')||'';
+      if(type.includes('image')){
+        const rId=rel.getAttribute('Id');
+        let target=rel.getAttribute('Target')||'';
+        if(!target.startsWith('word/'))target='word/'+target;
+        const imgFile=zip.file(target);
+        if(imgFile){const blob=await imgFile.async('blob');images[rId]=URL.createObjectURL(blob)}
+      }
     }
   }
-  return out;
-}
 
-/* ========== 获取 block 中所有段落的 content 数组引用 ========== */
-function getParagraphs(block){
-  const res=[];
-  if(block.type==='p')res.push(block.content);
-  else if(block.type==='tbl'){
-    for(const row of block.rows)for(const cell of row)for(const p of cell)res.push(p.content);
+  const body=gw(doc,'body')[0];
+  const reds=[];const yels=[];let ri=0,yi=0;const blocks=[];
+
+  function parseRuns(parent,contentArr){
+    const runs=gw(parent,'r');
+    for(const run of runs){
+      const rPr=gw(run,'rPr')[0];
+      let bold=false,italic=false,underline=false,colorVal=null,hlVal=null,shdFill=null;
+      if(rPr){
+        if(gw(rPr,'b').length)bold=true;
+        if(gw(rPr,'i').length)italic=true;
+        const uEl=gw(rPr,'u')[0];
+        if(uEl){const uv=wval(uEl,'val');if(uv!=='none')underline=true}
+        const cEl=gw(rPr,'color')[0];
+        if(cEl)colorVal=wval(cEl,'val');
+        const hEl=gw(rPr,'highlight')[0];
+        if(hEl)hlVal=wval(hEl,'val');
+        const sEl=gw(rPr,'shd')[0];
+        if(sEl){const sv=wval(sEl,'val');if(sv==='clear')shdFill=wval(sEl,'fill')}
+      }
+
+      const allEls=run.getElementsByTagName('*');
+      let foundImg=false;
+      for(const el of allEls){
+        if(el.localName==='blip'){
+          const embed=rembed(el);
+          if(embed&&images[embed]){contentArr.push({type:'img',src:images[embed]});foundImg=true;break}
+        }
+      }
+      if(foundImg)continue;
+
+      const tabs=gw(run,'tab');
+      if(tabs.length){contentArr.push({type:'tab'});continue}
+      const brs=gw(run,'br');
+      if(brs.length){
+        const brType=wval(brs[0],'type');
+        contentArr.push({type:brType==='page'?'pagebreak':'br'});
+        continue;
+      }
+
+      const ts=gw(run,'t');
+      if(!ts.length)continue;
+      let text='';
+      for(const t of ts)text+=t.textContent;
+      if(!text)continue;
+
+      const red=isRed(colorVal);
+      const yel=!red&&isYellow(hlVal,shdFill);
+
+      if(red){
+        const idx=ri++;contentArr.push({type:'red',text,index:idx});reds.push({text,index:idx});
+      }else if(yel){
+        const idx=yi++;contentArr.push({type:'yel',text,index:idx});yels.push({text,index:idx});
+      }else{
+        contentArr.push({type:'txt',text,bold,italic,underline,color:colorVal});
+      }
+    }
   }
-  return res;
+
+  function getHeading(para){
+    const pPr=gw(para,'pPr')[0];if(!pPr)return 0;
+    const pStyle=gw(pPr,'pStyle')[0];if(!pStyle)return 0;
+    const val=wval(pStyle,'val')||'';
+    const m=val.match(/heading\s*(\d+)/i)||val.match(/^(\d+)$/);
+    return m?parseInt(m[1]):0;
+  }
+
+  const children=body.children;
+  for(const child of children){
+    const ln=child.localName;
+    if(ln==='p'){
+      const heading=getHeading(child);
+      const content=[];parseRuns(child,content);
+      blocks.push({type:'p',content,heading});
+    }else if(ln==='tbl'){
+      const rows=[];
+      const trs=gw(child,'tr');
+      for(const tr of trs){
+        const cells=[];
+        const tcs=gw(tr,'tc');
+        for(const tc of tcs){
+          const cellContent=[];
+          const ps=gw(tc,'p');
+          for(const p of ps){const content=[];parseRuns(p,content);cellContent.push({type:'p',content,heading:0})}
+          cells.push(cellContent);
+        }
+        rows.push(cells);
+      }
+      blocks.push({type:'tbl',rows});
+    }
+  }
+
+  const pairCount=Math.min(reds.length,yels.length);
+  const pairs=[];
+  for(let i=0;i<pairCount;i++)pairs.push({red:reds[i],yellow:yels[i]});
+
+  return {blocks,reds,yels,pairs,redCount:reds.length,yelCount:yels.length,pairCount};
 }
 
-/* ========== 跨段落/跨单元格合并连续同色 ========== */
-function mergeAcrossBlocks(blocks){
-  let lastType=null;
-  let lastRef=null; // {arr, idx}
+function renderFileList(){
+  fileGrid.innerHTML='';
+  if(docs.size===0){secHead.style.display='none';emptyState.style.display='';return}
+  secHead.style.display='';emptyState.style.display='none';
+  docCount.textContent=docs.size+' 个文档';
+  for(const[id,d]of docs){
+    const card=document.createElement('div');card.className='file-card';
+    card.innerHTML=`
+      <button class="fc-del" data-id="${id}" title="删除"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <div class="fc-inner">
+        <div class="fc-top">
+          <div class="fc-icon"><span>DOCX</span></div>
+          <div class="fc-info"><div class="fc-name">${esc(d.name)}</div><div class="fc-meta">${fmtSize(d.size)} · ${fmtDate(new Date(d.date))}</div></div>
+        </div>
+        <div class="fc-badges">
+          <span class="badge red">${d.redCount} 红色标记</span>
+          <span class="badge yel">${d.yelCount} 黄色高亮</span>
+          <span class="badge pair">${d.pairCount} 组配对</span>
+        </div>
+      </div>`;
+    card.addEventListener('click',e=>{if(!e.target.closest('.fc-del'))openReader(id)});
+    card.querySelector('.fc-del').addEventListener('click',e=>{e.stopPropagation();docs.delete(id);renderFileList();toast('已删除','info')});
+    fileGrid.appendChild(card);
+  }
+}
 
-  for(const block of blocks){
-    const paras
+function openReader(id){
+  const d=docs.get(id);if(!d)return;
+  rName.textContent=d.name;
+  rStats.innerHTML=`
+    <span class="r-stat"><span class="dot rd"></span>${d.redCount} 红</span>
+    <span class="r-stat"><span class="dot yl"></span>${d.yelCount} 黄</span>
+    <span class="r-stat"><span class="dot gr"></span>${d.pairCount} 配对</span>`;
+  renderDoc(d);
+  reader.classList.add('open');
+  document.body.style.overflow='hidden';
+  readerBody.scrollTop=0;
+}
+
+function renderDoc(d){
+  let html='';
+  for(const block of d.blocks){
+    if(block.type==='p'){
+      const tag=block.heading?`h${Math.min(block.heading,6)}`:'p';
+      html+=`<${tag}>${renderContent(block.content,d)}</${tag}>`;
+    }else if(block.type==='tbl'){
+      html+='<table>';
+      for(let r=0;r<block.rows.length;r++){
+        const isHeader=r===0;
+        html+='<tr>';
+        for(const cell of block.rows[r]){
+          const tag=isHeader?'th':'td';
+          let cellHtml='';
+          for(const p of cell)cellHtml+='<p>'+renderContent(p.content,d)+'</p>';
+          html+=`<${tag}>${cellHtml}</${tag}>`;
+        }
+        html+='</tr>';
+      }
+      html+='</table>';
+    }else if(block.type==='pagebreak'){
+      html+='<hr style="border:none;border-top:2px dashed #ccc;margin:32px 0">';
+    }
+  }
+  readerBody.innerHTML=html||'<p style="color:var(--paper-m);text-align:center;padding:40px">文档内容为空</p>';
+
+  readerBody.querySelectorAll('.red-btn').forEach(btn=>{
+    const idx=parseInt(btn.dataset.idx);
+    if(idx<d.pairCount){
+      btn.addEventListener('click',()=>{
+        copyText(d.yels[idx].text);
+        btn.classList.add('copied');
+        setTimeout(()=>btn.classList.remove('copied'),1200);
+      });
+    }
+  });
+  readerBody.querySelectorAll('.yel-copy').forEach(el=>{
+    el.addEventListener('click',()=>{
+      copyText(el.dataset.text);
+      el.classList.add('copied');
+      el.textContent='已复制';
+      setTimeout(()=>{el.classList.remove('copied');el.textContent=el.dataset.text},1200);
+    });
+  });
+}
+
+function renderContent(content,d){
+  let html='';
+  for(const c of content){
+    if(c.type==='txt'){
+      let style='';
+      if(c.bold)style+='font-weight:700;';
+      if(c.italic)style+='font-style:italic;';
+      if(c.underline)style+='text-decoration:underline;';
+      if(c.color)style+='color:#'+c.color.replace(/^#/,'')+';';
+      html+=style?`<span style="${style}">${esc(c.text)}</span>`:esc(c.text);
+    }else if(c.type==='red'){
+      const paired=c.index<d.pairCount;
+      const cls=paired?'red-btn':'red-btn no-pair';
+      html+=`<button class="${cls}" data-idx="${c.index}" title="${paired?'复制对应内容':'无配对'}"><svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:#fff;fill:none;stroke-width:2.2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>${esc(c.text)}</button>`;
+    }else if(c.type==='yel'){
+      html+=`<span class="yel-copy" data-text="${esc(c.text)}" title="点击复制">${esc(c.text)}</span>`;
+    }else if(c.type==='img'){
+      html+=`<img src="${c.src}" alt="图片">`;
+    }else if(c.type==='br'){
+      html+='<br>';
+    }else if(c.type==='tab'){
+      html+='\t';
+    }else if(c.type==='pagebreak'){
+      html+='<hr style="border:none;border-top:2px dashed #ccc;margin:24px 0">';
+    }
+  }
+  return html;
+}
+
+async function copyText(text){
+  try{await navigator.clipboard.writeText(text)}
+  catch(e){
+    const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();
+  }
+  toast('已复制到剪贴板','ok');
+}
+
+renderFileList();
+})();
+</script>
+</body>
+</html>
