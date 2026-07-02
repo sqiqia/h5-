@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DocX 智能解析器</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<!-- JSZip: 首选 jsdelivr，加载失败自动切换 cdnjs -->
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"
+        onerror="this.onerror=null;this.src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'"></script>
 <style>
   :root {
     --bg:#ffffff;--bg2:#f7f7f8;--card:#ffffff;
@@ -49,7 +51,30 @@
   .upload-zone h3{position:relative;z-index:1;font-size:20px;font-weight:600;margin-bottom:10px;color:var(--fg)}
   .upload-zone h3 u{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
   .upload-zone p{position:relative;z-index:1;color:var(--fg3);font-size:14px;line-height:1.6}
-  #fileInput{display:none}
+
+  /* 文件输入：用 clip 隐藏而非 display:none，确保所有浏览器都能触发选择器 */
+  #fileInput {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* 透明 label 覆盖整个上传区域，点击即触发文件选择，不依赖 JS 的 .click() */
+  .upload-zone label[for="fileInput"] {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    cursor: pointer;
+  }
+
+  .cdn-warn{position:relative;z-index:6;margin-top:12px;padding:10px 18px;border-radius:var(--rs);background:rgba(212,61,61,.06);border:1px solid rgba(212,61,61,.15);color:var(--red);font-size:13px;display:none;animation:fu .3s ease-out}
+  .cdn-warn.show{display:block}
 
   .sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;animation:fu .6s ease-out .14s both}
   .sec-head h2{font-size:18px;font-weight:600}
@@ -116,10 +141,8 @@
   .reader-body img{max-width:100%;height:auto;border-radius:4px;margin:10px 0}
   .reader-body blockquote{border-left:4px solid var(--accent);padding:6px 18px;margin:14px 0;background:#faf8f4;color:var(--paper-m);font-style:italic}
 
-  /* 红色文字：仅高亮显示，无交互 */
   .red-text{color:var(--red);font-weight:700}
 
-  /* 黄色可复制 */
   .yel-copy{display:inline;padding:2px 10px;border-radius:5px;background:rgba(200,150,10,.12);border:1px solid rgba(200,150,10,.3);color:#7a5c08;font-weight:500;cursor:pointer;transition:.2s;vertical-align:middle;margin:0 2px;line-height:1.7}
   .yel-copy:hover{background:rgba(200,150,10,.22);border-color:rgba(200,150,10,.5)}
   .yel-copy.copied{background:rgba(58,157,62,.1);border-color:rgba(58,157,62,.3);color:#2e7d32}
@@ -163,12 +186,16 @@
 
   <div class="upload-zone" id="uploadZone">
     <div class="loader-o" id="loader"><div class="spinner"></div><span>正在解析文档...</span></div>
+    <!-- 透明 label 覆盖整个区域，点击直接触发原生文件选择器，无需 JS 调用 .click() -->
+    <label for="fileInput" aria-label="选择 docx 文件"></label>
     <div class="u-icon">
       <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
     </div>
     <h3>拖拽文件到此处，或 <u>点击选择</u></h3>
     <p>支持同时上传多个 .docx 文件</p>
-    <input type="file" id="fileInput" accept=".docx" multiple>
+    <!-- clip 隐藏替代 display:none，兼容所有浏览器的文件选择器触发 -->
+    <input type="file" id="fileInput" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" multiple>
+    <div class="cdn-warn" id="cdnWarn">JSZip 库加载失败，无法解析文档。请检查网络连接后刷新页面。</div>
   </div>
 
   <div class="sec-head" id="secHead" style="display:none">
@@ -197,6 +224,12 @@
 <script>
 (function(){
 'use strict';
+
+/* 页面加载后检测 JSZip 是否可用 */
+var cdnWarn = document.getElementById('cdnWarn');
+if (typeof JSZip === 'undefined') {
+  cdnWarn.classList.add('show');
+}
 
 const W='http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 const R='http://schemas.openxmlformats.org/officeDocument/2006/relationships';
@@ -250,18 +283,36 @@ function isYellow(hlVal,shdFill){
   return false;
 }
 
-uploadZone.addEventListener('click',e=>{if(!e.target.closest('.loader-o'))fileInput.click()});
-uploadZone.addEventListener('dragover',e=>{e.preventDefault();uploadZone.classList.add('over')});
-uploadZone.addEventListener('dragleave',()=>uploadZone.classList.remove('over'));
-uploadZone.addEventListener('drop',e=>{e.preventDefault();uploadZone.classList.remove('over');for(const f of e.dataTransfer.files)if(f.name.toLowerCase().endsWith('.docx'))handleFile(f)});
-fileInput.addEventListener('change',()=>{for(const f of fileInput.files)handleFile(f);fileInput.value=''});
+/* 拖拽事件绑定在 uploadZone 上，label 不影响冒泡 */
+uploadZone.addEventListener('dragover',function(e){e.preventDefault();uploadZone.classList.add('over')});
+uploadZone.addEventListener('dragleave',function(){uploadZone.classList.remove('over')});
+uploadZone.addEventListener('drop',function(e){
+  e.preventDefault();
+  uploadZone.classList.remove('over');
+  var files=e.dataTransfer.files;
+  for(var i=0;i<files.length;i++){
+    if(files[i].name.toLowerCase().endsWith('.docx'))handleFile(files[i]);
+  }
+});
+
+/* 文件选择通过 label 原生触发，这里只监听 change 读取结果 */
+fileInput.addEventListener('change',function(){
+  for(var i=0;i<fileInput.files.length;i++)handleFile(fileInput.files[i]);
+  fileInput.value='';
+});
 
 backBtn.addEventListener('click',closeReader);
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&reader.classList.contains('open'))closeReader()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&reader.classList.contains('open'))closeReader()});
 
 function closeReader(){reader.classList.remove('open');document.body.style.overflow=''}
 
 async function handleFile(file){
+  /* 关键检查：JSZip 是否已加载 */
+  if(typeof JSZip==='undefined'){
+    toast('JSZip 库未加载，请刷新页面重试','err');
+    cdnWarn.classList.add('show');
+    return;
+  }
   if(!file.name.toLowerCase().endsWith('.docx')){toast('跳过非 .docx 文件: '+file.name,'err');return}
   if(file.size>50*1048576){toast('文件过大: '+file.name,'err');return}
   loader.classList.add('on');
@@ -277,7 +328,6 @@ async function handleFile(file){
   }finally{loader.classList.remove('on')}
 }
 
-/* ===== 段落内合并连续同色片段 ===== */
 function mergeInParagraph(content){
   const out=[];
   for(const item of content){
@@ -292,21 +342,15 @@ function mergeInParagraph(content){
   return out;
 }
 
-/* ===== 跨段落/跨单元格合并连续同色 ===== */
 function mergeAcrossBlocks(blocks){
   let lastType=null;
   let lastRef=null;
-
   for(const block of blocks){
     const paras=getParagraphs(block);
     for(const content of paras){
-      // 先段内合并
       const merged=mergeInParagraph(content);
-      // 清空原数组，用合并后的替换
       content.length=0;
       for(const item of merged)content.push(item);
-
-      // 跨段落合并
       for(let i=0;i<content.length;i++){
         const item=content[i];
         if(item.type==='red'||item.type==='yel'){
@@ -327,7 +371,6 @@ function mergeAcrossBlocks(blocks){
   }
 }
 
-/* ===== 获取 block 中所有段落的 content 引用 ===== */
 function getParagraphs(block){
   const res=[];
   if(block.type==='p')res.push(block.content);
@@ -337,7 +380,6 @@ function getParagraphs(block){
   return res;
 }
 
-/* ===== 解析 docx ===== */
 async function parseDocx(buf){
   const zip=await JSZip.loadAsync(buf);
   const docXml=await zip.file('word/document.xml').async('text');
@@ -384,7 +426,6 @@ async function parseDocx(buf){
         if(sEl){const sv=wval(sEl,'val');if(sv==='clear')shdFill=wval(sEl,'fill')}
       }
 
-      // 图片
       const allEls=run.getElementsByTagName('*');
       let foundImg=false;
       for(const el of allEls){
@@ -456,10 +497,8 @@ async function parseDocx(buf){
     }
   }
 
-  // 跨段落合并连续同色
   mergeAcrossBlocks(blocks);
 
-  // 重新统计合并后的数量
   redCount=0;yelCount=0;
   for(const block of blocks){
     for(const content of getParagraphs(block)){
@@ -480,20 +519,20 @@ function renderFileList(){
   docCount.textContent=docs.size+' 个文档';
   for(const[id,d]of docs){
     const card=document.createElement('div');card.className='file-card';
-    card.innerHTML=`
-      <button class="fc-del" data-id="${id}" title="删除"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-      <div class="fc-inner">
-        <div class="fc-top">
-          <div class="fc-icon"><span>DOCX</span></div>
-          <div class="fc-info"><div class="fc-name">${esc(d.name)}</div><div class="fc-meta">${fmtSize(d.size)} · ${fmtDate(new Date(d.date))}</div></div>
-        </div>
-        <div class="fc-badges">
-          <span class="badge red">${d.redCount} 红色标记</span>
-          <span class="badge yel">${d.yelCount} 黄色高亮</span>
-        </div>
-      </div>`;
-    card.addEventListener('click',e=>{if(!e.target.closest('.fc-del'))openReader(id)});
-    card.querySelector('.fc-del').addEventListener('click',e=>{e.stopPropagation();docs.delete(id);renderFileList();toast('已删除','info')});
+    card.innerHTML=
+      '<button class="fc-del" data-id="'+id+'" title="删除"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>'+
+      '<div class="fc-inner">'+
+        '<div class="fc-top">'+
+          '<div class="fc-icon"><span>DOCX</span></div>'+
+          '<div class="fc-info"><div class="fc-name">'+esc(d.name)+'</div><div class="fc-meta">'+fmtSize(d.size)+' · '+fmtDate(new Date(d.date))+'</div></div>'+
+        '</div>'+
+        '<div class="fc-badges">'+
+          '<span class="badge red">'+d.redCount+' 红色标记</span>'+
+          '<span class="badge yel">'+d.yelCount+' 黄色高亮</span>'+
+        '</div>'+
+      '</div>';
+    card.addEventListener('click',function(e){if(!e.target.closest('.fc-del'))openReader(id)});
+    card.querySelector('.fc-del').addEventListener('click',function(e){e.stopPropagation();docs.delete(id);renderFileList();toast('已删除','info')});
     fileGrid.appendChild(card);
   }
 }
@@ -501,9 +540,9 @@ function renderFileList(){
 function openReader(id){
   const d=docs.get(id);if(!d)return;
   rName.textContent=d.name;
-  rStats.innerHTML=`
-    <span class="r-stat"><span class="dot rd"></span>${d.redCount} 红</span>
-    <span class="r-stat"><span class="dot yl"></span>${d.yelCount} 黄</span>`;
+  rStats.innerHTML=
+    '<span class="r-stat"><span class="dot rd"></span>'+d.redCount+' 红</span>'+
+    '<span class="r-stat"><span class="dot yl"></span>'+d.yelCount+' 黄</span>';
   renderDoc(d);
   reader.classList.add('open');
   document.body.style.overflow='hidden';
@@ -514,8 +553,8 @@ function renderDoc(d){
   let html='';
   for(const block of d.blocks){
     if(block.type==='p'){
-      const tag=block.heading?`h${Math.min(block.heading,6)}`:'p';
-      html+=`<${tag}>${renderContent(block.content)}</${tag}>`;
+      const tag=block.heading?'h'+Math.min(block.heading,6):'p';
+      html+='<'+tag+'>'+renderContent(block.content)+'</'+tag+'>';
     }else if(block.type==='tbl'){
       html+='<table>';
       for(let r=0;r<block.rows.length;r++){
@@ -525,7 +564,7 @@ function renderDoc(d){
           const tag=isHeader?'th':'td';
           let cellHtml='';
           for(const p of cell)cellHtml+='<p>'+renderContent(p.content)+'</p>';
-          html+=`<${tag}>${cellHtml}</${tag}>`;
+          html+='<'+tag+'>'+cellHtml+'</'+tag+'>';
         }
         html+='</tr>';
       }
@@ -536,13 +575,12 @@ function renderDoc(d){
   }
   readerBody.innerHTML=html||'<p style="color:var(--paper-m);text-align:center;padding:40px">文档内容为空</p>';
 
-  // 只绑定黄色点击复制
-  readerBody.querySelectorAll('.yel-copy').forEach(el=>{
-    el.addEventListener('click',()=>{
+  readerBody.querySelectorAll('.yel-copy').forEach(function(el){
+    el.addEventListener('click',function(){
       copyText(el.dataset.text);
       el.classList.add('copied');
       el.textContent='已复制';
-      setTimeout(()=>{el.classList.remove('copied');el.textContent=el.dataset.text},1200);
+      setTimeout(function(){el.classList.remove('copied');el.textContent=el.dataset.text},1200);
     });
   });
 }
@@ -556,15 +594,13 @@ function renderContent(content){
       if(c.italic)style+='font-style:italic;';
       if(c.underline)style+='text-decoration:underline;';
       if(c.color)style+='color:#'+c.color.replace(/^#/,'')+';';
-      html+=style?`<span style="${style}">${esc(c.text)}</span>`:esc(c.text);
+      html+=style?'<span style="'+style+'">'+esc(c.text)+'</span>':esc(c.text);
     }else if(c.type==='red'){
-      // 红色仅高亮显示，无交互
-      html+=`<span class="red-text">${esc(c.text)}</span>`;
+      html+='<span class="red-text">'+esc(c.text)+'</span>';
     }else if(c.type==='yel'){
-      // 黄色点击复制自身
-      html+=`<span class="yel-copy" data-text="${esc(c.text)}" title="点击复制">${esc(c.text)}</span>`;
+      html+='<span class="yel-copy" data-text="'+esc(c.text)+'" title="点击复制">'+esc(c.text)+'</span>';
     }else if(c.type==='img'){
-      html+=`<img src="${c.src}" alt="图片">`;
+      html+='<img src="'+c.src+'" alt="图片">';
     }else if(c.type==='br'){
       html+='<br>';
     }else if(c.type==='tab'){
