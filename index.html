@@ -5,7 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DocX 智能解析器</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"
+        onerror="this.onerror=null;this.src='https://unpkg.com/jszip@3.10.1/dist/jszip.min.js'"></script>
+<script>
+window.addEventListener('load',function(){
+  if(typeof JSZip==='undefined'){
+    var s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+    s.onerror=function(){showEnvError('cdn')};
+    document.head.appendChild(s);
+  }
+});
+</script>
 <style>
   :root {
     --bg:#ffffff;--bg2:#f7f7f8;--card:#ffffff;
@@ -22,10 +33,10 @@
   body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--fg);min-height:100vh;overflow-x:hidden}
 
   .bg-a{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-  .bg-a::before{content:'';position:absolute;top:-12%;right:-6%;width:500px;height:500px;background:radial-gradient(circle,rgba(212,61,61,.05),transparent 70%);animation:blob 22s ease-in-out infinite}
-  .bg-a::after{content:'';position:absolute;bottom:-8%;left:-6%;width:400px;height:400px;background:radial-gradient(circle,rgba(200,150,10,.04),transparent 70%);animation:blob 28s ease-in-out infinite reverse}
+  .bg-a::before{content:'';position:absolute;top:-12%;right:-6%;width:500px;height:500px;background:radial-gradient(circle,rgba(212,61,61,.04),transparent 70%);animation:blob 22s ease-in-out infinite}
+  .bg-a::after{content:'';position:absolute;bottom:-8%;left:-6%;width:400px;height:400px;background:radial-gradient(circle,rgba(200,150,10,.03),transparent 70%);animation:blob 28s ease-in-out infinite reverse}
   @keyframes blob{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-25px) scale(1.08)}66%{transform:translate(-20px,15px) scale(.95)}}
-  .bg-g{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(0,0,0,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.018) 1px,transparent 1px);background-size:56px 56px}
+  .bg-g{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(0,0,0,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.015) 1px,transparent 1px);background-size:56px 56px}
 
   .wrap{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:32px 24px 80px}
 
@@ -80,6 +91,17 @@
   .empty-state svg{width:56px;height:56px;stroke:var(--brd2);fill:none;margin-bottom:16px;stroke-width:1.2}
   .empty-state p{font-size:14px}
 
+  /* 环境错误提示 */
+  .env-error{display:none;position:fixed;inset:0;z-index:9999;background:rgba(255,255,255,.97);align-items:center;justify-content:center;padding:40px}
+  .env-error.show{display:flex}
+  .env-error-box{text-align:center;max-width:520px}
+  .env-error-box .icon{width:72px;height:72px;border-radius:50%;background:#fef2f2;display:flex;align-items:center;justify-content:center;margin:0 auto 24px}
+  .env-error-box .icon svg{width:36px;height:36px;stroke:var(--err);fill:none;stroke-width:1.5}
+  .env-error-box h2{font-size:22px;font-weight:700;margin-bottom:12px;color:var(--fg)}
+  .env-error-box p{font-size:15px;color:var(--fg2);line-height:1.8;margin-bottom:20px}
+  .env-error-box code{display:block;background:var(--bg2);border:1px solid var(--brd);border-radius:var(--rs);padding:14px 18px;font-size:13px;color:var(--accent);text-align:left;word-break:break-all;margin-bottom:16px;font-family:'DM Mono',monospace}
+  .env-error-box .note{font-size:13px;color:var(--fg3);line-height:1.7}
+
   .reader{display:none;position:fixed;inset:0;z-index:100;background:var(--bg);flex-direction:column;animation:rfi .3s ease-out}
   .reader.open{display:flex}
   @keyframes rfi{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
@@ -122,7 +144,7 @@
   .yel-copy:hover{background:rgba(200,150,10,.22);border-color:rgba(200,150,10,.5)}
   .yel-copy.copied{background:rgba(58,157,62,.1);border-color:rgba(58,157,62,.3);color:#2e7d32}
 
-  .toast-c{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+  .toast-c{position:fixed;top:20px;right:20px;z-index:10000;display:flex;flex-direction:column;gap:8px;pointer-events:none}
   .toast{padding:12px 18px;border-radius:var(--rs);font-size:13px;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.1);animation:ti .3s ease-out;display:flex;align-items:center;gap:8px;max-width:340px;pointer-events:auto}
   .toast.ok{background:#eef7ee;border:1px solid #c5e1c5;color:#2e7d32}
   .toast.err{background:#fdeaea;border:1px solid #f0c0c0;color:#b82e2e}
@@ -151,6 +173,17 @@
 <div class="bg-a"></div>
 <div class="bg-g"></div>
 <div class="toast-c" id="toastC"></div>
+
+<!-- 环境错误提示 -->
+<div class="env-error" id="envError">
+  <div class="env-error-box">
+    <div class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+    <h2 id="envTitle">无法在此环境中使用</h2>
+    <p id="envDesc">你当前可能正在 GitHub 文件预览页面中打开此文件。</p>
+    <code id="envUrl"></code>
+    <p class="note">请复制上面的完整链接，在新标签页中直接打开即可正常使用。</p>
+  </div>
+</div>
 
 <div class="wrap" id="homeView">
   <header>
@@ -193,147 +226,205 @@
 </div>
 
 <script>
-(function(){
+/* ===== 环境检测 ===== */
+function checkEnv(){
+  // 检测是否在 iframe 沙箱中（GitHub 文件预览）
+  try{
+    if(window.self!==window.top){
+      // 在 iframe 中，检查是否有 sandbox 限制
+      var frame=window.frameElement;
+      if(frame&&(frame.getAttribute('sandbox')||'').indexOf('allow-same-origin')===-1){
+        showEnvError('iframe');
+        return false;
+      }
+    }
+  }catch(e){
+    // 跨域访问被拒绝 = 在受限 iframe 中
+    showEnvError('iframe');
+    return false;
+  }
+
+  // 检测 URL 是否是 GitHub 文件预览（非 Pages）
+  if(location.hostname==='github.com'||location.hostname==='www.github.com'){
+    if(location.pathname.indexOf('/blob/')!==-1){
+      showEnvError('preview');
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function showEnvError(type){
+  var el=document.getElementById('envError');
+  var title=document.getElementById('envTitle');
+  var desc=document.getElementById('envDesc');
+  var urlEl=document.getElementById('envUrl');
+
+  if(type==='iframe'){
+    title.textContent='请在浏览器中直接打开此页面';
+    desc.textContent='你当前在嵌入框架中打开，文件上传功能被禁用。请复制下方链接，在新标签页中打开：';
+  }else if(type==='preview'){
+    title.textContent='请通过 GitHub Pages 链接访问';
+    desc.textContent='你正在 GitHub 文件预览页面，此处无法使用上传功能。请前往 GitHub Pages 地址打开：';
+  }else if(type==='cdn'){
+    title.textContent='JSZip 库加载失败';
+    desc.textContent='无法加载文档解析所需的库，请检查网络连接后刷新页面。';
+    urlEl.style.display='none';
+  }
+
+  if(type!=='cdn'){
+    // 构建 Pages 链接
+    var pagesUrl=location.href
+      .replace(/^https?:\/\/github\.com\//,'https://')
+      .replace(/\/blob\/[^/]+\//,'/');
+    urlEl.textContent=pagesUrl;
+    urlEl.style.display='block';
+  }
+
+  el.classList.add('show');
+}
+
+/* ===== 环境检测通过后初始化 ===== */
+if(checkEnv()){
+  initApp();
+}
+
+function initApp(){
 'use strict';
 
-const W='http://schemas.openxmlformats.org/wordprocessingml/2006/main';
-const R='http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+var W='http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+var R='http://schemas.openxmlformats.org/officeDocument/2006/relationships';
 
-const uploadZone=document.getElementById('uploadZone');
-const fileInput=document.getElementById('fileInput');
-const loader=document.getElementById('loader');
-const fileGrid=document.getElementById('fileGrid');
-const secHead=document.getElementById('secHead');
-const docCount=document.getElementById('docCount');
-const emptyState=document.getElementById('emptyState');
-const reader=document.getElementById('reader');
-const backBtn=document.getElementById('backBtn');
-const rName=document.getElementById('rName');
-const rStats=document.getElementById('rStats');
-const readerBody=document.getElementById('readerBody');
-const toastC=document.getElementById('toastC');
+var uploadZone=document.getElementById('uploadZone');
+var fileInput=document.getElementById('fileInput');
+var loader=document.getElementById('loader');
+var fileGrid=document.getElementById('fileGrid');
+var secHead=document.getElementById('secHead');
+var docCount=document.getElementById('docCount');
+var emptyState=document.getElementById('emptyState');
+var reader=document.getElementById('reader');
+var backBtn=document.getElementById('backBtn');
+var rName=document.getElementById('rName');
+var rStats=document.getElementById('rStats');
+var readerBody=document.getElementById('readerBody');
+var toastC=document.getElementById('toastC');
 
-const docs=new Map();
-let docIdCounter=0;
+var docs=new Map();
+var docIdCounter=0;
 
-function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
 function fmtSize(b){if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(1)+' MB'}
 function fmtDate(d){if(!d||isNaN(d))return'未知';return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
 
 function toast(msg,type){
-  if(!type)type='info';
-  const t=document.createElement('div');t.className='toast '+type;t.textContent=msg;
+  type=type||'info';
+  var t=document.createElement('div');t.className='toast '+type;t.textContent=msg;
   toastC.appendChild(t);
   setTimeout(function(){t.style.animation='to .3s ease-in forwards';setTimeout(function(){t.remove()},300)},2500);
 }
 
 function gw(parent,tag){return parent.getElementsByTagNameNS(W,tag)}
-function wval(el,attr){if(!el)return null;let v=el.getAttributeNS(W,attr);if(!v)v=el.getAttribute('w:'+attr);if(!v)v=el.getAttribute(attr);return v}
-function rembed(el){if(!el)return null;let v=el.getAttributeNS(R,'embed');if(!v)v=el.getAttribute('r:embed');return v}
+function wval(el,attr){if(!el)return null;var v=el.getAttributeNS(W,attr);if(!v)v=el.getAttribute('w:'+attr);if(!v)v=el.getAttribute(attr);return v}
+function rembed(el){if(!el)return null;var v=el.getAttributeNS(R,'embed');if(!v)v=el.getAttribute('r:embed');return v}
 
-/* 判断是否红色文字 */
 function isRed(hex){
   if(!hex)return false;
   hex=hex.replace(/^#/,'');
   if(hex.length===4)hex=hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
   if(hex.length!==6)return false;
-  const r=parseInt(hex.substring(0,2),16),g=parseInt(hex.substring(2,4),16),b=parseInt(hex.substring(4,6),16);
+  var r=parseInt(hex.substring(0,2),16),g=parseInt(hex.substring(2,4),16),b=parseInt(hex.substring(4,6),16);
   return r>150&&r>g*1.6&&r>b*1.6;
 }
-
-/* 判断是否黄色高亮 —— 扩大检测范围 */
 function isYellow(hlVal,shdFill){
-  if(hlVal){
-    var v=hlVal.toLowerCase();
-    if(v==='yellow'||v==='darkyellow')return true;
-  }
+  if(hlVal&&hlVal.toLowerCase()==='yellow')return true;
   if(shdFill){
     var h=shdFill.replace(/^#/,'');
     if(h.length===4)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
-    if(h.length===6){
-      var r=parseInt(h.substring(0,2),16),g=parseInt(h.substring(2,4),16),b=parseInt(h.substring(4,6),16);
-      /* 放宽范围：高红+绿、低蓝即为黄色系 */
-      return(r>140&&g>100&&b<130&&(r+g)>b*4);
-    }
+    if(h.length===6){var r=parseInt(h.substring(0,2),16),g=parseInt(h.substring(2,4),16),b=parseInt(h.substring(4,6),16);return r>170&&g>150&&b<130}
   }
   return false;
-}
-
-/* 获取段落级底纹颜色 */
-function getParaShading(para){
-  var pPr=gw(para,'pPr')[0];
-  if(!pPr)return null;
-  var shd=gw(pPr,'shd')[0];
-  if(!shd)return null;
-  var sv=wval(shd,'val');
-  if(sv&&sv.toLowerCase()!=='nil'){
-    return wval(shd,'fill');
-  }
-  return null;
 }
 
 uploadZone.addEventListener('click',function(e){if(!e.target.closest('.loader-o'))fileInput.click()});
 uploadZone.addEventListener('dragover',function(e){e.preventDefault();uploadZone.classList.add('over')});
 uploadZone.addEventListener('dragleave',function(){uploadZone.classList.remove('over')});
 uploadZone.addEventListener('drop',function(e){e.preventDefault();uploadZone.classList.remove('over');for(var i=0;i<e.dataTransfer.files.length;i++){var f=e.dataTransfer.files[i];if(f.name.toLowerCase().endsWith('.docx'))handleFile(f)}});
-fileInput.addEventListener('change',function(){for(var i=0;i<fileInput.files.length;i++)handleFile(fileInput.files[i]);fileInput.value=''});
+fileInput.addEventListener('change',function(){for(var i=0;i<fileInput.files.length;i++){handleFile(fileInput.files[i])}fileInput.value=''});
 
 backBtn.addEventListener('click',closeReader);
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&reader.classList.contains('open'))closeReader()});
 
 function closeReader(){reader.classList.remove('open');document.body.style.overflow=''}
 
-async function handleFile(file){
+function handleFile(file){
   if(!file.name.toLowerCase().endsWith('.docx')){toast('跳过非 .docx 文件: '+file.name,'err');return}
   if(file.size>50*1048576){toast('文件过大: '+file.name,'err');return}
   loader.classList.add('on');
-  try{
-    var buf=await file.arrayBuffer();
-    var data=await parseDocx(buf);
+  file.arrayBuffer().then(function(buf){
+    return parseDocx(buf);
+  }).then(function(data){
     var id=++docIdCounter;
     docs.set(id,{name:file.name,size:file.size,date:file.lastModified,blocks:data.blocks,redCount:data.redCount,yelCount:data.yelCount});
     renderFileList();
     toast('解析成功: '+file.name,'ok');
-  }catch(err){
+  }).catch(function(err){
     console.error(err);toast('解析失败: '+file.name+' — '+(err.message||'未知错误'),'err');
-  }finally{loader.classList.remove('on')}
+  }).finally(function(){loader.classList.remove('on')});
 }
 
-/* ===== 段内合并：吸收纯空白文本，合并连续同色 ===== */
+/* ===== 段落内合并连续同色片段 ===== */
 function mergeInParagraph(content){
-  /* 第一遍：把纯空白 txt 吸收到相邻的同色项中 */
-  var processed=[];
+  var out=[];
   for(var i=0;i<content.length;i++){
     var item=content[i];
-    if(item.type==='txt'&&item.text.trim()===''){
-      /* 尝试附加到前一个彩色项 */
-      var prev=processed[processed.length-1];
-      if(prev&&(prev.type==='red'||prev.type==='yel')){
-        prev.text+=item.text;
-        continue;
-      }
-      /* 尝试附加到后一个彩色项 */
-      if(i+1<content.length&&(content[i+1].type==='red'||content[i+1].type==='yel')){
-        content[i+1].text=item.text+content[i+1].text;
-        continue;
-      }
-    }
-    processed.push(item);
-  }
-  /* 第二遍：合并连续同类型 */
-  var out=[];
-  for(var j=0;j<processed.length;j++){
-    var it=processed[j];
-    var last=out[out.length-1];
-    if(it.type==='red'&&last&&last.type==='red'){
-      last.text+=it.text;
-    }else if(it.type==='yel'&&last&&last.type==='yel'){
-      last.text+=it.text;
+    if(item.type==='red'&&out.length>0&&out[out.length-1].type==='red'){
+      out[out.length-1].text+=item.text;
+    }else if(item.type==='yel'&&out.length>0&&out[out.length-1].type==='yel'){
+      out[out.length-1].text+=item.text;
     }else{
-      out.push(it);
+      out.push(item);
     }
   }
   return out;
+}
+
+/* ===== 跨段落/跨单元格合并连续同色 ===== */
+function mergeAcrossBlocks(blocks){
+  var lastType=null;
+  var lastRef=null;
+
+  for(var b=0;b<blocks.length;b++){
+    var block=blocks[b];
+    var paras=getParagraphs(block);
+    for(var p=0;p<paras.length;p++){
+      var content=paras[p];
+
+      // 先段内合并
+      var merged=mergeInParagraph(content);
+      content.length=0;
+      for(var m=0;m<merged.length;m++)content.push(merged[m]);
+
+      // 跨段落合并
+      for(var i=0;i<content.length;i++){
+        var item=content[i];
+        if(item.type==='red'||item.type==='yel'){
+          if(lastType===item.type&&lastRef){
+            // ★ 关键修复：把当前片段文字追加到上一个片段，然后删掉当前片段
+            lastRef.arr[lastRef.idx].text+=item.text;
+            content.splice(i,1);
+            i--;
+          }else{
+            lastType=item.type;
+            lastRef={arr:content,idx:i};
+          }
+        }else{
+          lastType=null;
+          lastRef=null;
+        }
+      }
+    }
+  }
 }
 
 /* ===== 获取 block 中所有段落的 content 引用 ===== */
@@ -352,215 +443,156 @@ function getParagraphs(block){
   return res;
 }
 
-/* ===== 跨段落/跨单元格合并连续同色 ===== */
-function mergeAcrossBlocks(blocks){
-  var lastType=null;
-  var lastRef=null;
-
-  for(var bi=0;bi<blocks.length;bi++){
-    var block=blocks[bi];
-    var paras=getParagraphs(block);
-    for(var pi=0;pi<paras.length;pi++){
-      var content=paras[pi];
-      /* 先段内合并 */
-      var merged=mergeInParagraph(content);
-      content.length=0;
-      for(var m=0;m<merged.length;m++)content.push(merged[m]);
-
-      /* 检查段落是否仅包含纯空白 txt */
-      var isWsOnly=content.length>0;
-      for(var k=0;k<content.length;k++){
-        if(!(content[k].type==='txt'&&content[k].text.trim()==='')){isWsOnly=false;break}
-      }
-
-      if(isWsOnly&&lastRef){
-        /* 将空白吸收到上一个彩色项，不阻断连续性 */
-        var ws='';
-        for(var w=0;w<content.length;w++)ws+=content[w].text;
-        lastRef.arr[lastRef.idx].text+=ws;
-        content.length=0;
-        continue;
-      }
-
-      /* 跨段落合并 */
-      for(var i=0;i<content.length;i++){
-        var item=content[i];
-        if(item.type==='red'||item.type==='yel'){
-          if(lastType===item.type&&lastRef){
-            lastRef.arr[lastRef.idx].text+=item.text;
-            content.splice(i,1);
-            i--;
-          }else{
-            lastType=item.type;
-            lastRef={arr:content,idx:i};
-          }
-        }else{
-          lastType=null;
-          lastRef=null;
-        }
-      }
-    }
-  }
-}
-
 /* ===== 解析 docx ===== */
-async function parseDocx(buf){
-  var zip=await JSZip.loadAsync(buf);
-  var docXml=await zip.file('word/document.xml').async('text');
-  var parser=new DOMParser();
-  var doc=parser.parseFromString(docXml,'application/xml');
+function parseDocx(buf){
+  return JSZip.loadAsync(buf).then(function(zip){
+    return zip.file('word/document.xml').async('text').then(function(docXml){
+      var parser=new DOMParser();
+      var doc=parser.parseFromString(docXml,'application/xml');
 
-  /* 提取图片 */
-  var images={};
-  var relsFile=zip.file('word/_rels/document.xml.rels');
-  if(relsFile){
-    var rXml=await relsFile.async('text');
-    var rDoc=parser.parseFromString(rXml,'application/xml');
-    var rels=rDoc.getElementsByTagName('Relationship');
-    for(var ri=0;ri<rels.length;ri++){
-      var rel=rels[ri];
-      var rType=rel.getAttribute('Type')||'';
-      if(rType.indexOf('image')!==-1){
-        var rId=rel.getAttribute('Id');
-        var target=rel.getAttribute('Target')||'';
-        if(target.indexOf('word/')===-1)target='word/'+target;
-        var imgFile=zip.file(target);
-        if(imgFile){var blob=await imgFile.async('blob');images[rId]=URL.createObjectURL(blob)}
-      }
-    }
-  }
-
-  var body=gw(doc,'body')[0];
-  var redCount=0,yelCount=0;
-  var blocks=[];
-
-  /* 解析 run 列表，paraShading 为段落级底纹色值 */
-  function parseRuns(parent,contentArr,paraShading){
-    var runs=gw(parent,'r');
-    for(var ri=0;ri<runs.length;ri++){
-      var run=runs[ri];
-      var rPr=gw(run,'rPr')[0];
-      var bold=false,italic=false,underline=false,colorVal=null,hlVal=null,shdFill=null;
-      if(rPr){
-        if(gw(rPr,'b').length)bold=true;
-        if(gw(rPr,'i').length)italic=true;
-        var uEl=gw(rPr,'u')[0];
-        if(uEl){var uv=wval(uEl,'val');if(uv!=='none')underline=true}
-        var cEl=gw(rPr,'color')[0];
-        if(cEl)colorVal=wval(cEl,'val');
-        var hEl=gw(rPr,'highlight')[0];
-        if(hEl)hlVal=wval(hEl,'val');
-        /* 底纹：不再限制 val 必须为 clear，只要不是 nil 就检查填充色 */
-        var sEl=gw(rPr,'shd')[0];
-        if(sEl){
-          var sv=wval(sEl,'val');
-          if(sv&&sv.toLowerCase()!=='nil'){
-            shdFill=wval(sEl,'fill');
+      var images={};
+      var relsFile=zip.file('word/_rels/document.xml.rels');
+      var relsPromise=relsFile?relsFile.async('text').then(function(rXml){
+        var rDoc=parser.parseFromString(rXml,'application/xml');
+        var rels=rDoc.getElementsByTagName('Relationship');
+        var imgPromises=[];
+        for(var i=0;i<rels.length;i++){
+          var rel=rels[i];
+          var type=rel.getAttribute('Type')||'';
+          if(type.indexOf('image')!==-1){
+            (function(rel){
+              var rId=rel.getAttribute('Id');
+              var target=rel.getAttribute('Target')||'';
+              if(target.indexOf('word/')!==0)target='word/'+target;
+              var imgFile=zip.file(target);
+              if(imgFile){
+                imgPromises.push(imgFile.async('blob').then(function(blob){
+                  images[rId]=URL.createObjectURL(blob);
+                }));
+              }
+            })(rel);
           }
         }
-      }
+        return Promise.all(imgPromises);
+      }):Promise.resolve();
 
-      /* 图片检测 */
-      var allEls=run.getElementsByTagName('*');
-      var foundImg=false;
-      for(var ei=0;ei<allEls.length;ei++){
-        if(allEls[ei].localName==='blip'){
-          var embed=rembed(allEls[ei]);
-          if(embed&&images[embed]){contentArr.push({type:'img',src:images[embed]});foundImg=true;break}
-        }
-      }
-      if(foundImg)continue;
+      return relsPromise.then(function(){
+        var body=gw(doc,'body')[0];
+        var redCount=0,yelCount=0;
+        var blocks=[];
 
-      /* 制表符 */
-      var tabs=gw(run,'tab');
-      if(tabs.length){contentArr.push({type:'tab'});continue}
-      /* 换行 */
-      var brs=gw(run,'br');
-      if(brs.length){
-        var brType=wval(brs[0],'type');
-        contentArr.push({type:brType==='page'?'pagebreak':'br'});
-        continue;
-      }
+        function parseRuns(parent,contentArr){
+          var runs=gw(parent,'r');
+          for(var ri=0;ri<runs.length;ri++){
+            var run=runs[ri];
+            var rPr=gw(run,'rPr')[0];
+            var bold=false,italic=false,underline=false,colorVal=null,hlVal=null,shdFill=null;
+            if(rPr){
+              if(gw(rPr,'b').length)bold=true;
+              if(gw(rPr,'i').length)italic=true;
+              var uEl=gw(rPr,'u')[0];
+              if(uEl){var uv=wval(uEl,'val');if(uv!=='none')underline=true}
+              var cEl=gw(rPr,'color')[0];
+              if(cEl)colorVal=wval(cEl,'val');
+              var hEl=gw(rPr,'highlight')[0];
+              if(hEl)hlVal=wval(hEl,'val');
+              var sEl=gw(rPr,'shd')[0];
+              if(sEl){var sv=wval(sEl,'val');if(sv==='clear')shdFill=wval(sEl,'fill')}
+            }
 
-      /* 文本 */
-      var ts=gw(run,'t');
-      if(!ts.length)continue;
-      var text='';
-      for(var ti=0;ti<ts.length;ti++)text+=ts[ti].textContent;
-      if(!text)continue;
+            var allEls=run.getElementsByTagName('*');
+            var foundImg=false;
+            for(var ei=0;ei<allEls.length;ei++){
+              if(allEls[ei].localName==='blip'){
+                var embed=rembed(allEls[ei]);
+                if(embed&&images[embed]){contentArr.push({type:'img',src:images[embed]});foundImg=true;break}
+              }
+            }
+            if(foundImg)continue;
 
-      var red=isRed(colorVal);
-      /* 黄色判断：运行级高亮/底纹，或段落级底纹 */
-      var yel=!red&&(isYellow(hlVal,shdFill)||(paraShading&&isYellow(null,paraShading)));
+            if(gw(run,'tab').length){contentArr.push({type:'tab'});continue}
+            var brs=gw(run,'br');
+            if(brs.length){
+              var brType=wval(brs[0],'type');
+              contentArr.push({type:brType==='page'?'pagebreak':'br'});
+              continue;
+            }
 
-      if(red){
-        contentArr.push({type:'red',text:text});redCount++;
-      }else if(yel){
-        contentArr.push({type:'yel',text:text});yelCount++;
-      }else{
-        contentArr.push({type:'txt',text:text,bold:bold,italic:italic,underline:underline,color:colorVal});
-      }
-    }
-  }
+            var ts=gw(run,'t');
+            if(!ts.length)continue;
+            var text='';
+            for(var ti=0;ti<ts.length;ti++)text+=ts[ti].textContent;
+            if(!text)continue;
 
-  function getHeading(para){
-    var pPr=gw(para,'pPr')[0];if(!pPr)return 0;
-    var pStyle=gw(pPr,'pStyle')[0];if(!pStyle)return 0;
-    var val=wval(pStyle,'val')||'';
-    var m=val.match(/heading\s*(\d+)/i)||val.match(/^(\d+)$/);
-    return m?parseInt(m[1]):0;
-  }
+            var red=isRed(colorVal);
+            var yel=!red&&isYellow(hlVal,shdFill);
 
-  var children=body.children;
-  for(var ci=0;ci<children.length;ci++){
-    var child=children[ci];
-    var ln=child.localName;
-    if(ln==='p'){
-      var heading=getHeading(child);
-      var paraShading=getParaShading(child);
-      var content=[];
-      parseRuns(child,content,paraShading);
-      blocks.push({type:'p',content:content,heading:heading});
-    }else if(ln==='tbl'){
-      var rows=[];
-      var trs=gw(child,'tr');
-      for(var tri=0;tri<trs.length;tri++){
-        var cells=[];
-        var tcs=gw(trs[tri],'tc');
-        for(var tci=0;tci<tcs.length;tci++){
-          var cellContent=[];
-          var ps=gw(tcs[tci],'p');
-          for(var psi=0;psi<ps.length;psi++){
-            var cContent=[];
-            /* 表格单元格也检查段落底纹 */
-            var cellShading=getParaShading(ps[psi]);
-            parseRuns(ps[psi],cContent,cellShading);
-            cellContent.push({type:'p',content:cContent,heading:0});
+            if(red){
+              contentArr.push({type:'red',text});redCount++;
+            }else if(yel){
+              contentArr.push({type:'yel',text});yelCount++;
+            }else{
+              contentArr.push({type:'txt',text:text,bold:bold,italic:italic,underline:underline,color:colorVal});
+            }
           }
-          cells.push(cellContent);
         }
-        rows.push(cells);
-      }
-      blocks.push({type:'tbl',rows:rows});
-    }
-  }
 
-  /* 跨段落合并连续同色 */
-  mergeAcrossBlocks(blocks);
+        function getHeading(para){
+          var pPr=gw(para,'pPr')[0];if(!pPr)return 0;
+          var pStyle=gw(pPr,'pStyle')[0];if(!pStyle)return 0;
+          var val=wval(pStyle,'val')||'';
+          var m=val.match(/heading\s*(\d+)/i)||val.match(/^(\d+)$/);
+          return m?parseInt(m[1]):0;
+        }
 
-  /* 重新统计合并后的数量 */
-  redCount=0;yelCount=0;
-  for(var bi2=0;bi2<blocks.length;bi2++){
-    var bparas=getParagraphs(blocks[bi2]);
-    for(var pi2=0;pi2<bparas.length;pi2++){
-      for(var ii=0;ii<bparas[pi2].length;ii++){
-        if(bparas[pi2][ii].type==='red')redCount++;
-        else if(bparas[pi2][ii].type==='yel')yelCount++;
-      }
-    }
-  }
+        var children=body.children;
+        for(var ci=0;ci<children.length;ci++){
+          var child=children[ci];
+          var ln=child.localName;
+          if(ln==='p'){
+            var heading=getHeading(child);
+            var content=[];parseRuns(child,content);
+            blocks.push({type:'p',content:content,heading:heading});
+          }else if(ln==='tbl'){
+            var rows=[];
+            var trs=gw(child,'tr');
+            for(var tri=0;tri<trs.length;tri++){
+              var cells=[];
+              var tcs=gw(trs[tri],'tc');
+              for(var tci=0;tci<tcs.length;tci++){
+                var cellContent=[];
+                var ps=gw(tcs[tci],'p');
+                for(var pi=0;pi<ps.length;pi++){
+                  var content=[];parseRuns(ps[pi],content);
+                  cellContent.push({type:'p',content:content,heading:0});
+                }
+                cells.push(cellContent);
+              }
+              rows.push(cells);
+            }
+            blocks.push({type:'tbl',rows:rows});
+          }
+        }
 
-  return {blocks:blocks,redCount:redCount,yelCount:yelCount};
+        // 跨段落合并连续同色
+        mergeAcrossBlocks(blocks);
+
+        // 重新统计合并后的数量
+        redCount=0;yelCount=0;
+        for(var bi=0;bi<blocks.length;bi++){
+          var bparas=getParagraphs(blocks[bi]);
+          for(var bpi=0;bpi<bparas.length;bpi++){
+            for(var bii=0;bii<bparas[bpi].length;bii++){
+              if(bparas[bpi][bii].type==='red')redCount++;
+              else if(bparas[bpi][bii].type==='yel')yelCount++;
+            }
+          }
+        }
+
+        return {blocks:blocks,redCount:redCount,yelCount:yelCount};
+      });
+    });
+  });
 }
 
 function renderFileList(){
@@ -570,7 +602,18 @@ function renderFileList(){
   docCount.textContent=docs.size+' 个文档';
   docs.forEach(function(d,id){
     var card=document.createElement('div');card.className='file-card';
-    card.innerHTML='<button class="fc-del" data-id="'+id+'" title="删除"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button><div class="fc-inner"><div class="fc-top"><div class="fc-icon"><span>DOCX</span></div><div class="fc-info"><div class="fc-name">'+esc(d.name)+'</div><div class="fc-meta">'+fmtSize(d.size)+' · '+fmtDate(new Date(d.date))+'</div></div></div><div class="fc-badges"><span class="badge red">'+d.redCount+' 红色标记</span><span class="badge yel">'+d.yelCount+' 黄色高亮</span></div></div>';
+    card.innerHTML=
+      '<button class="fc-del" data-id="'+id+'" title="删除"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>'+
+      '<div class="fc-inner">'+
+        '<div class="fc-top">'+
+          '<div class="fc-icon"><span>DOCX</span></div>'+
+          '<div class="fc-info"><div class="fc-name">'+esc(d.name)+'</div><div class="fc-meta">'+fmtSize(d.size)+' · '+fmtDate(new Date(d.date))+'</div></div>'+
+        '</div>'+
+        '<div class="fc-badges">'+
+          '<span class="badge red">'+d.redCount+' 红色标记</span>'+
+          '<span class="badge yel">'+d.yelCount+' 黄色高亮</span>'+
+        '</div>'+
+      '</div>';
     card.addEventListener('click',function(e){if(!e.target.closest('.fc-del'))openReader(id)});
     card.querySelector('.fc-del').addEventListener('click',function(e){e.stopPropagation();docs.delete(id);renderFileList();toast('已删除','info')});
     fileGrid.appendChild(card);
@@ -580,7 +623,9 @@ function renderFileList(){
 function openReader(id){
   var d=docs.get(id);if(!d)return;
   rName.textContent=d.name;
-  rStats.innerHTML='<span class="r-stat"><span class="dot rd"></span>'+d.redCount+' 红</span><span class="r-stat"><span class="dot yl"></span>'+d.yelCount+' 黄</span>';
+  rStats.innerHTML=
+    '<span class="r-stat"><span class="dot rd"></span>'+d.redCount+' 红</span>'+
+    '<span class="r-stat"><span class="dot yl"></span>'+d.yelCount+' 黄</span>';
   renderDoc(d);
   reader.classList.add('open');
   document.body.style.overflow='hidden';
@@ -597,15 +642,14 @@ function renderDoc(d){
     }else if(block.type==='tbl'){
       html+='<table>';
       for(var r=0;r<block.rows.length;r++){
-        var isHeader=r===0;
         html+='<tr>';
         for(var c=0;c<block.rows[r].length;c++){
-          var ttag=isHeader?'th':'td';
+          var tag=r===0?'th':'td';
           var cellHtml='';
           for(var p=0;p<block.rows[r][c].length;p++){
             cellHtml+='<p>'+renderContent(block.rows[r][c][p].content)+'</p>';
           }
-          html+='<'+ttag+'>'+cellHtml+'</'+ttag+'>';
+          html+='<'+tag+'>'+cellHtml+'</'+tag+'>';
         }
         html+='</tr>';
       }
@@ -616,17 +660,18 @@ function renderDoc(d){
   }
   readerBody.innerHTML=html||'<p style="color:var(--paper-m);text-align:center;padding:40px">文档内容为空</p>';
 
-  /* 绑定黄色点击复制 */
+  // 绑定黄色点击复制
   var yelEls=readerBody.querySelectorAll('.yel-copy');
-  for(var y=0;y<yelEls.length;y++){
+  for(var i=0;i<yelEls.length;i++){
     (function(el){
       el.addEventListener('click',function(){
-        copyText(el.dataset.text);
+        // ★ 关键修复：从 data-text 属性取完整文本（合并后的）
+        copyText(el.getAttribute('data-text'));
         el.classList.add('copied');
         el.textContent='已复制';
-        setTimeout(function(){el.classList.remove('copied');el.textContent=el.dataset.text},1200);
+        setTimeout(function(){el.classList.remove('copied');el.textContent=el.getAttribute('data-text')},1200);
       });
-    })(yelEls[y]);
+    })(yelEls[i]);
   }
 }
 
@@ -644,6 +689,7 @@ function renderContent(content){
     }else if(c.type==='red'){
       html+='<span class="red-text">'+esc(c.text)+'</span>';
     }else if(c.type==='yel'){
+      // ★ 关键修复：data-text 存的是合并后的完整文本
       html+='<span class="yel-copy" data-text="'+esc(c.text)+'" title="点击复制">'+esc(c.text)+'</span>';
     }else if(c.type==='img'){
       html+='<img src="'+c.src+'" alt="图片">';
@@ -658,16 +704,30 @@ function renderContent(content){
   return html;
 }
 
-async function copyText(text){
-  try{await navigator.clipboard.writeText(text)}
-  catch(e){
-    var ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();
+function copyText(text){
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).catch(function(){
+      fallbackCopy(text);
+    });
+  }else{
+    fallbackCopy(text);
   }
   toast('已复制到剪贴板','ok');
 }
 
+function fallbackCopy(text){
+  var ta=document.createElement('textarea');
+  ta.value=text;
+  ta.style.cssText='position:fixed;opacity:0';
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand('copy');
+  ta.remove();
+}
+
 renderFileList();
-})();
+
+} // end initApp
 </script>
 </body>
 </html>
