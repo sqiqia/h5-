@@ -8,11 +8,11 @@
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <style>
   :root {
-    --bg:#ffffff;--bg2:#f7f7f8;--card:#ffffff;
+    --bg:#ffffff;--bg2:#f7f7f8;--card:#ffffff;--card-h:#f9f9fa;
     --brd:#e4e4e8;--brd2:#d0d0d6;
     --fg:#1a1a1f;--fg2:#5a5a64;--fg3:#9a9aa2;
     --accent:#d4872e;--accent-d:#b87325;
-    --red:#d43d3d;--red-glow:rgba(212,61,61,.1);
+    --red:#d43d3d;--red-d:#b82e2e;--red-glow:rgba(212,61,61,.1);
     --yel:#c8960a;--yel-bg:rgba(200,150,10,.08);--yel-brd:rgba(200,150,10,.3);
     --ok:#3a9d3e;--err:#d43d3d;--info:#2e8bc0;
     --paper-t:#2c2c2c;--paper-m:#888;--paper-brd:#e8e8ec;
@@ -71,6 +71,7 @@
   .badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600}
   .badge.red{background:rgba(212,61,61,.08);color:var(--red);border:1px solid rgba(212,61,61,.18)}
   .badge.yel{background:var(--yel-bg);color:var(--yel);border:1px solid var(--yel-brd)}
+  .badge.pair{background:rgba(58,157,62,.08);color:var(--ok);border:1px solid rgba(58,157,62,.18)}
   .fc-del{position:absolute;top:12px;right:12px;z-index:2;width:28px;height:28px;border-radius:6px;border:none;background:transparent;color:var(--fg3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s;opacity:0}
   .file-card:hover .fc-del{opacity:1}
   .fc-del:hover{background:rgba(212,61,61,.08);color:var(--red)}
@@ -93,6 +94,7 @@
   .r-stat .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
   .r-stat .dot.rd{background:var(--red)}
   .r-stat .dot.yl{background:var(--yel)}
+  .r-stat .dot.gr{background:var(--ok)}
 
   .reader-body{flex:1;overflow-y:auto;padding:48px 64px;color:var(--paper-t);font-family:'Noto Serif SC',serif;font-size:15px;line-height:1.9}
   .reader-body::-webkit-scrollbar{width:8px}
@@ -116,10 +118,13 @@
   .reader-body img{max-width:100%;height:auto;border-radius:4px;margin:10px 0}
   .reader-body blockquote{border-left:4px solid var(--accent);padding:6px 18px;margin:14px 0;background:#faf8f4;color:var(--paper-m);font-style:italic}
 
-  /* 红色文字：仅高亮显示，无交互 */
-  .red-text{color:var(--red);font-weight:700}
+  .red-btn{display:inline-flex;align-items:center;gap:5px;padding:3px 14px;border:none;border-radius:6px;background:var(--red);color:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:.2s;font-family:'Noto Serif SC',serif;vertical-align:middle;margin:0 2px;line-height:1.6;position:relative;box-shadow:0 1px 4px rgba(212,61,61,.2)}
+  .red-btn:hover{background:var(--red-d);box-shadow:0 3px 12px rgba(212,61,61,.25);transform:scale(1.03)}
+  .red-btn:active{transform:scale(.97)}
+  .red-btn svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:2.2;flex-shrink:0}
+  .red-btn.no-pair{background:#bbb;box-shadow:none;opacity:.55;cursor:default}
+  .red-btn.no-pair:hover{transform:none;box-shadow:none}
 
-  /* 黄色可复制 */
   .yel-copy{display:inline;padding:2px 10px;border-radius:5px;background:rgba(200,150,10,.12);border:1px solid rgba(200,150,10,.3);color:#7a5c08;font-weight:500;cursor:pointer;transition:.2s;vertical-align:middle;margin:0 2px;line-height:1.7}
   .yel-copy:hover{background:rgba(200,150,10,.22);border-color:rgba(200,150,10,.5)}
   .yel-copy.copied{background:rgba(58,157,62,.1);border-color:rgba(58,157,62,.3);color:#2e7d32}
@@ -158,7 +163,7 @@
   <header>
     <div class="logo"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><polyline points="14 2 14 8 20 8"/></svg></div>
     <h1>DocX <em>智能</em>解析器</h1>
-    <p><b>红色</b> 文字高亮显示 · <b>黄色高亮</b> 点击即复制</p>
+    <p><b>红色</b> 文字自动变按钮 · <b>黄色高亮</b> 点击即复制 · 一键配对</p>
   </header>
 
   <div class="upload-zone" id="uploadZone">
@@ -277,7 +282,7 @@ async function handleFile(file){
   }finally{loader.classList.remove('on')}
 }
 
-/* ===== 段落内合并连续同色片段 ===== */
+/* ========== 段落内合并连续同色 ========== */
 function mergeInParagraph(content){
   const out=[];
   for(const item of content){
@@ -292,42 +297,7 @@ function mergeInParagraph(content){
   return out;
 }
 
-/* ===== 跨段落/跨单元格合并连续同色 ===== */
-function mergeAcrossBlocks(blocks){
-  let lastType=null;
-  let lastRef=null;
-
-  for(const block of blocks){
-    const paras=getParagraphs(block);
-    for(const content of paras){
-      // 先段内合并
-      const merged=mergeInParagraph(content);
-      // 清空原数组，用合并后的替换
-      content.length=0;
-      for(const item of merged)content.push(item);
-
-      // 跨段落合并
-      for(let i=0;i<content.length;i++){
-        const item=content[i];
-        if(item.type==='red'||item.type==='yel'){
-          if(lastType===item.type&&lastRef){
-            lastRef.arr[lastRef.idx].text+=item.text;
-            content.splice(i,1);
-            i--;
-          }else{
-            lastType=item.type;
-            lastRef={arr:content,idx:i};
-          }
-        }else{
-          lastType=null;
-          lastRef=null;
-        }
-      }
-    }
-  }
-}
-
-/* ===== 获取 block 中所有段落的 content 引用 ===== */
+/* ========== 获取 block 中所有段落的 content 数组引用 ========== */
 function getParagraphs(block){
   const res=[];
   if(block.type==='p')res.push(block.content);
@@ -337,255 +307,10 @@ function getParagraphs(block){
   return res;
 }
 
-/* ===== 解析 docx ===== */
-async function parseDocx(buf){
-  const zip=await JSZip.loadAsync(buf);
-  const docXml=await zip.file('word/document.xml').async('text');
-  const parser=new DOMParser();
-  const doc=parser.parseFromString(docXml,'application/xml');
+/* ========== 跨段落/跨单元格合并连续同色 ========== */
+function mergeAcrossBlocks(blocks){
+  let lastType=null;
+  let lastRef=null; // {arr, idx}
 
-  const images={};
-  const relsFile=zip.file('word/_rels/document.xml.rels');
-  if(relsFile){
-    const rXml=await relsFile.async('text');
-    const rDoc=parser.parseFromString(rXml,'application/xml');
-    const rels=rDoc.getElementsByTagName('Relationship');
-    for(const rel of rels){
-      const type=rel.getAttribute('Type')||'';
-      if(type.includes('image')){
-        const rId=rel.getAttribute('Id');
-        let target=rel.getAttribute('Target')||'';
-        if(!target.startsWith('word/'))target='word/'+target;
-        const imgFile=zip.file(target);
-        if(imgFile){const blob=await imgFile.async('blob');images[rId]=URL.createObjectURL(blob)}
-      }
-    }
-  }
-
-  const body=gw(doc,'body')[0];
-  let redCount=0,yelCount=0;
-  const blocks=[];
-
-  function parseRuns(parent,contentArr){
-    const runs=gw(parent,'r');
-    for(const run of runs){
-      const rPr=gw(run,'rPr')[0];
-      let bold=false,italic=false,underline=false,colorVal=null,hlVal=null,shdFill=null;
-      if(rPr){
-        if(gw(rPr,'b').length)bold=true;
-        if(gw(rPr,'i').length)italic=true;
-        const uEl=gw(rPr,'u')[0];
-        if(uEl){const uv=wval(uEl,'val');if(uv!=='none')underline=true}
-        const cEl=gw(rPr,'color')[0];
-        if(cEl)colorVal=wval(cEl,'val');
-        const hEl=gw(rPr,'highlight')[0];
-        if(hEl)hlVal=wval(hEl,'val');
-        const sEl=gw(rPr,'shd')[0];
-        if(sEl){const sv=wval(sEl,'val');if(sv==='clear')shdFill=wval(sEl,'fill')}
-      }
-
-      // 图片
-      const allEls=run.getElementsByTagName('*');
-      let foundImg=false;
-      for(const el of allEls){
-        if(el.localName==='blip'){
-          const embed=rembed(el);
-          if(embed&&images[embed]){contentArr.push({type:'img',src:images[embed]});foundImg=true;break}
-        }
-      }
-      if(foundImg)continue;
-
-      const tabs=gw(run,'tab');
-      if(tabs.length){contentArr.push({type:'tab'});continue}
-      const brs=gw(run,'br');
-      if(brs.length){
-        const brType=wval(brs[0],'type');
-        contentArr.push({type:brType==='page'?'pagebreak':'br'});
-        continue;
-      }
-
-      const ts=gw(run,'t');
-      if(!ts.length)continue;
-      let text='';
-      for(const t of ts)text+=t.textContent;
-      if(!text)continue;
-
-      const red=isRed(colorVal);
-      const yel=!red&&isYellow(hlVal,shdFill);
-
-      if(red){
-        contentArr.push({type:'red',text});redCount++;
-      }else if(yel){
-        contentArr.push({type:'yel',text});yelCount++;
-      }else{
-        contentArr.push({type:'txt',text,bold,italic,underline,color:colorVal});
-      }
-    }
-  }
-
-  function getHeading(para){
-    const pPr=gw(para,'pPr')[0];if(!pPr)return 0;
-    const pStyle=gw(pPr,'pStyle')[0];if(!pStyle)return 0;
-    const val=wval(pStyle,'val')||'';
-    const m=val.match(/heading\s*(\d+)/i)||val.match(/^(\d+)$/);
-    return m?parseInt(m[1]):0;
-  }
-
-  const children=body.children;
-  for(const child of children){
-    const ln=child.localName;
-    if(ln==='p'){
-      const heading=getHeading(child);
-      const content=[];parseRuns(child,content);
-      blocks.push({type:'p',content,heading});
-    }else if(ln==='tbl'){
-      const rows=[];
-      const trs=gw(child,'tr');
-      for(const tr of trs){
-        const cells=[];
-        const tcs=gw(tr,'tc');
-        for(const tc of tcs){
-          const cellContent=[];
-          const ps=gw(tc,'p');
-          for(const p of ps){const content=[];parseRuns(p,content);cellContent.push({type:'p',content,heading:0})}
-          cells.push(cellContent);
-        }
-        rows.push(cells);
-      }
-      blocks.push({type:'tbl',rows});
-    }
-  }
-
-  // 跨段落合并连续同色
-  mergeAcrossBlocks(blocks);
-
-  // 重新统计合并后的数量
-  redCount=0;yelCount=0;
   for(const block of blocks){
-    for(const content of getParagraphs(block)){
-      for(const item of content){
-        if(item.type==='red')redCount++;
-        else if(item.type==='yel')yelCount++;
-      }
-    }
-  }
-
-  return {blocks,redCount,yelCount};
-}
-
-function renderFileList(){
-  fileGrid.innerHTML='';
-  if(docs.size===0){secHead.style.display='none';emptyState.style.display='';return}
-  secHead.style.display='';emptyState.style.display='none';
-  docCount.textContent=docs.size+' 个文档';
-  for(const[id,d]of docs){
-    const card=document.createElement('div');card.className='file-card';
-    card.innerHTML=`
-      <button class="fc-del" data-id="${id}" title="删除"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-      <div class="fc-inner">
-        <div class="fc-top">
-          <div class="fc-icon"><span>DOCX</span></div>
-          <div class="fc-info"><div class="fc-name">${esc(d.name)}</div><div class="fc-meta">${fmtSize(d.size)} · ${fmtDate(new Date(d.date))}</div></div>
-        </div>
-        <div class="fc-badges">
-          <span class="badge red">${d.redCount} 红色标记</span>
-          <span class="badge yel">${d.yelCount} 黄色高亮</span>
-        </div>
-      </div>`;
-    card.addEventListener('click',e=>{if(!e.target.closest('.fc-del'))openReader(id)});
-    card.querySelector('.fc-del').addEventListener('click',e=>{e.stopPropagation();docs.delete(id);renderFileList();toast('已删除','info')});
-    fileGrid.appendChild(card);
-  }
-}
-
-function openReader(id){
-  const d=docs.get(id);if(!d)return;
-  rName.textContent=d.name;
-  rStats.innerHTML=`
-    <span class="r-stat"><span class="dot rd"></span>${d.redCount} 红</span>
-    <span class="r-stat"><span class="dot yl"></span>${d.yelCount} 黄</span>`;
-  renderDoc(d);
-  reader.classList.add('open');
-  document.body.style.overflow='hidden';
-  readerBody.scrollTop=0;
-}
-
-function renderDoc(d){
-  let html='';
-  for(const block of d.blocks){
-    if(block.type==='p'){
-      const tag=block.heading?`h${Math.min(block.heading,6)}`:'p';
-      html+=`<${tag}>${renderContent(block.content)}</${tag}>`;
-    }else if(block.type==='tbl'){
-      html+='<table>';
-      for(let r=0;r<block.rows.length;r++){
-        const isHeader=r===0;
-        html+='<tr>';
-        for(const cell of block.rows[r]){
-          const tag=isHeader?'th':'td';
-          let cellHtml='';
-          for(const p of cell)cellHtml+='<p>'+renderContent(p.content)+'</p>';
-          html+=`<${tag}>${cellHtml}</${tag}>`;
-        }
-        html+='</tr>';
-      }
-      html+='</table>';
-    }else if(block.type==='pagebreak'){
-      html+='<hr style="border:none;border-top:2px dashed #ccc;margin:32px 0">';
-    }
-  }
-  readerBody.innerHTML=html||'<p style="color:var(--paper-m);text-align:center;padding:40px">文档内容为空</p>';
-
-  // 只绑定黄色点击复制
-  readerBody.querySelectorAll('.yel-copy').forEach(el=>{
-    el.addEventListener('click',()=>{
-      copyText(el.dataset.text);
-      el.classList.add('copied');
-      el.textContent='已复制';
-      setTimeout(()=>{el.classList.remove('copied');el.textContent=el.dataset.text},1200);
-    });
-  });
-}
-
-function renderContent(content){
-  let html='';
-  for(const c of content){
-    if(c.type==='txt'){
-      let style='';
-      if(c.bold)style+='font-weight:700;';
-      if(c.italic)style+='font-style:italic;';
-      if(c.underline)style+='text-decoration:underline;';
-      if(c.color)style+='color:#'+c.color.replace(/^#/,'')+';';
-      html+=style?`<span style="${style}">${esc(c.text)}</span>`:esc(c.text);
-    }else if(c.type==='red'){
-      // 红色仅高亮显示，无交互
-      html+=`<span class="red-text">${esc(c.text)}</span>`;
-    }else if(c.type==='yel'){
-      // 黄色点击复制自身
-      html+=`<span class="yel-copy" data-text="${esc(c.text)}" title="点击复制">${esc(c.text)}</span>`;
-    }else if(c.type==='img'){
-      html+=`<img src="${c.src}" alt="图片">`;
-    }else if(c.type==='br'){
-      html+='<br>';
-    }else if(c.type==='tab'){
-      html+='\t';
-    }else if(c.type==='pagebreak'){
-      html+='<hr style="border:none;border-top:2px dashed #ccc;margin:24px 0">';
-    }
-  }
-  return html;
-}
-
-async function copyText(text){
-  try{await navigator.clipboard.writeText(text)}
-  catch(e){
-    const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();
-  }
-  toast('已复制到剪贴板','ok');
-}
-
-renderFileList();
-})();
-</script>
-</body>
-</html>
+    const paras
