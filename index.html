@@ -138,6 +138,28 @@ window.addEventListener('load',function(){
   .reader-body blockquote{border-left:4px solid var(--accent);padding:6px 18px;margin:14px 0;background:#faf8f4;color:var(--paper-m);font-style:italic}
 
   .red-text{color:var(--red);font-weight:700}
+
+  /* 红色可点击按钮样式 */
+  .red-btn{color:var(--red);font-weight:700;cursor:pointer;background:rgba(212,61,61,.06);border:1px solid rgba(212,61,61,.2);padding:2px 10px;border-radius:5px;transition:.2s;display:inline;line-height:1.7;font-family:inherit;font-size:inherit;vertical-align:middle;margin:0 1px;position:relative}
+  .red-btn:hover{background:rgba(212,61,61,.15);border-color:rgba(212,61,61,.4);box-shadow:0 0 0 3px rgba(212,61,61,.06)}
+  .red-btn:active{transform:scale(.97)}
+  .red-btn.copied{background:rgba(58,157,62,.1);border-color:rgba(58,157,62,.35);color:#2e7d32;box-shadow:none}
+  .red-btn::after{content:'';position:absolute;bottom:-2px;left:50%;transform:translateX(-50%) scaleX(0);width:60%;height:2px;background:var(--red);border-radius:1px;transition:transform .2s}
+  .red-btn:hover::after{transform:translateX(-50%) scaleX(1)}
+  .red-btn.copied::after{background:#2e7d32}
+
+  /* 红色标记汇总框 */
+  .red-summary{background:linear-gradient(135deg,#fef8f8 0%,#fdf2f2 100%);border:1px solid rgba(212,61,61,.15);border-radius:var(--r);padding:22px 26px;margin-bottom:32px;animation:fu .4s ease-out}
+  .red-summary-title{font-size:14px;font-weight:700;color:var(--red);margin-bottom:16px;display:flex;align-items:center;gap:8px;font-family:'DM Sans',sans-serif;letter-spacing:.3px}
+  .red-summary-title svg{width:16px;height:16px;stroke:var(--red);fill:none;stroke-width:2;flex-shrink:0}
+  .red-summary-title .pair-count{margin-left:auto;font-size:12px;font-weight:500;color:var(--fg3);font-family:'DM Sans',sans-serif}
+  .red-summary .btn-list{display:flex;flex-wrap:wrap;gap:8px}
+  .red-summary .red-btn{display:inline-flex;align-items:center;gap:5px;padding:7px 16px;font-size:13px;font-family:'Noto Serif SC',serif;white-space:nowrap}
+  .red-summary .red-btn .arrow{color:var(--fg3);font-size:11px;font-weight:400;opacity:.5}
+  .red-summary .red-btn .arrow{transition:opacity .2s}
+  .red-summary .red-btn:hover .arrow{opacity:1;color:var(--red)}
+  .red-summary .red-btn.copied .arrow{display:none}
+
   .yel-copy{display:inline;padding:2px 10px;border-radius:5px;background:rgba(200,150,10,.12);border:1px solid rgba(200,150,10,.3);color:#7a5c08;font-weight:500;cursor:pointer;transition:.2s;vertical-align:middle;margin:0 2px;line-height:1.7}
   .yel-copy:hover{background:rgba(200,150,10,.22);border-color:rgba(200,150,10,.5)}
   .yel-copy.copied{background:rgba(58,157,62,.1);border-color:rgba(58,157,62,.3);color:#2e7d32}
@@ -163,6 +185,9 @@ window.addEventListener('load',function(){
     .file-grid{grid-template-columns:1fr}
     .reader-bar{padding:10px 14px}
     .reader-body{padding:24px 18px}
+    .red-summary{padding:16px 18px}
+    .red-summary .btn-list{gap:6px}
+    .red-summary .red-btn{padding:5px 12px;font-size:12px}
   }
   @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
@@ -186,7 +211,7 @@ window.addEventListener('load',function(){
   <header>
     <div class="logo"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><polyline points="14 2 14 8 20 8"/></svg></div>
     <h1>DocX <em>智能</em>解析器</h1>
-    <p><b>红色</b> 文字高亮显示 · <b>黄色高亮</b> 点击即复制</p>
+    <p><b>红色</b> 文字点击复制答案 · <b>黄色高亮</b> 点击即复制</p>
   </header>
 
   <div class="upload-zone" id="uploadZone">
@@ -285,7 +310,11 @@ var toastC=document.getElementById('toastC');
 var docs=new Map();
 var docIdCounter=0;
 
+/* 用于存储当前文档的黄色文本索引表，供红色按钮查找 */
+var currentYelMap=[];
+
 function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function attrEsc(s){return esc(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 function fmtSize(b){if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(1)+' MB'}
 function fmtDate(d){if(!d||isNaN(d))return'未知';return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
 
@@ -300,10 +329,8 @@ function gw(parent,tag){return parent.getElementsByTagNameNS(W,tag)}
 function wval(el,attr){if(!el)return null;var v=el.getAttributeNS(W,attr);if(!v)v=el.getAttribute('w:'+attr);if(!v)v=el.getAttribute(attr);return v}
 function rembed(el){if(!el)return null;var v=el.getAttributeNS(R,'embed');if(!v)v=el.getAttribute('r:embed');return v}
 
-/* ===== 判断是否纯空白 ===== */
 function isBlank(text){return /^\s*$/.test(text)}
 
-/* ===== 检测填充色是否为黄色系 ===== */
 function isYellowFill(hex){
   if(!hex)return false;
   var h=hex.replace(/^#/,'');
@@ -326,7 +353,6 @@ function isYellow(hlVal,shdFill){
   return isYellowFill(shdFill);
 }
 
-/* ===== 检测段落级黄色底纹 ===== */
 function isParagraphShadingYellow(para){
   var pPr=gw(para,'pPr')[0];
   if(!pPr)return false;
@@ -355,7 +381,7 @@ function handleFile(file){
   loader.classList.add('on');
   file.arrayBuffer().then(function(buf){return parseDocx(buf)}).then(function(data){
     var id=++docIdCounter;
-    docs.set(id,{name:file.name,size:file.size,date:file.lastModified,blocks:data.blocks,redCount:data.redCount,yelCount:data.yelCount});
+    docs.set(id,{name:file.name,size:file.size,date:file.lastModified,blocks:data.blocks,redCount:data.redCount,yelCount:data.yelCount,pairs:data.pairs||[]});
     renderFileList();
     toast('解析成功: '+file.name,'ok');
   }).catch(function(err){
@@ -389,18 +415,14 @@ function mergeAcrossBlocks(blocks){
     var paras=getParagraphs(block);
     for(var p=0;p<paras.length;p++){
       var content=paras[p];
-
-      // 先段内合并
       var merged=mergeInParagraph(content);
       content.length=0;
       for(var m=0;m<merged.length;m++)content.push(merged[m]);
 
-      // 跨段落合并
       for(var i=0;i<content.length;i++){
         var item=content[i];
         if(item.type==='red'||item.type==='yel'){
           if(lastType===item.type&&lastRef){
-            // 同色连续：追加文本，删除当前片段
             lastRef.arr[lastRef.idx].text+=item.text;
             content.splice(i,1);
             i--;
@@ -409,11 +431,9 @@ function mergeAcrossBlocks(blocks){
             lastRef={arr:content,idx:i};
           }
         }else if(item.type==='txt'&&isBlank(item.text)){
-          // ★ 修复：纯空白文本不打断合并，直接跳过
           content.splice(i,1);
           i--;
         }else{
-          // 有实际内容的普通文本才打断合并
           lastType=null;
           lastRef=null;
         }
@@ -435,6 +455,45 @@ function getParagraphs(block){
     }
   }
   return res;
+}
+
+/* ===== 建立红色→黄色配对关系 ===== */
+function buildRedYelPairs(blocks){
+  /* 收集所有片段（按文档顺序，跨段落、跨表格） */
+  var allItems=[];
+  var allParas=getParagraphs(blocks);
+  for(var p=0;p<allParas.length;p++){
+    for(var i=0;i<allParas[p].length;i++){
+      allItems.push(allParas[p][i]);
+    }
+  }
+
+  var pairs=[];
+  var pairId=0;
+  var pendingRed=null;
+
+  for(var i=0;i<allItems.length;i++){
+    var item=allItems[i];
+    if(item.type==='red'){
+      /* 如果之前有未配对的红色，直接丢弃（没有对应黄色） */
+      pendingRed=item;
+      item.pairId='rp_'+(pairId++);
+    }else if(item.type==='yel'){
+      if(pendingRed&&!pendingRed.yelText){
+        /* 配对成功 */
+        pendingRed.yelText=item.text;
+        item.pairId=pendingRed.pairId;
+        pairs.push({id:pendingRed.pairId,redText:pendingRed.text,yelText:item.text});
+        pendingRed=null;
+      }
+      /* 如果没有pending红，这个黄色不参与配对 */
+    }else if(item.type==='txt'&&!isBlank(item.text)){
+      /* 有实际内容的普通文本打断配对 */
+      pendingRed=null;
+    }
+    /* img/br/tab/pagebreak 不打断配对 */
+  }
+  return pairs;
 }
 
 /* ===== 解析 docx ===== */
@@ -525,7 +584,6 @@ function parseDocx(buf){
             }else if(yel){
               contentArr.push({type:'yel',text:text});yelCount++;
             }else if(paraYellow&&text.trim()){
-              // ★ 修复：段落级黄色底纹，非空文本视为黄色
               contentArr.push({type:'yel',text:text});yelCount++;
             }else{
               contentArr.push({type:'txt',text:text,bold:bold,italic:italic,underline:underline,color:colorVal});
@@ -547,7 +605,6 @@ function parseDocx(buf){
           var ln=child.localName;
           if(ln==='p'){
             var heading=getHeading(child);
-            // ★ 检测段落级黄色底纹
             var paraYellow=isParagraphShadingYellow(child);
             var content=[];parseRuns(child,content,paraYellow);
             blocks.push({type:'p',content:content,heading:heading});
@@ -575,6 +632,10 @@ function parseDocx(buf){
 
         mergeAcrossBlocks(blocks);
 
+        /* 建立红色→黄色配对 */
+        var pairs=buildRedYelPairs(blocks);
+
+        /* 重新统计（合并后） */
         redCount=0;yelCount=0;
         for(var bi=0;bi<blocks.length;bi++){
           var bparas=getParagraphs(blocks[bi]);
@@ -586,7 +647,7 @@ function parseDocx(buf){
           }
         }
 
-        return {blocks:blocks,redCount:redCount,yelCount:yelCount};
+        return {blocks:blocks,redCount:redCount,yelCount:yelCount,pairs:pairs};
       });
     });
   });
@@ -598,6 +659,7 @@ function renderFileList(){
   secHead.style.display='';emptyState.style.display='none';
   docCount.textContent=docs.size+' 个文档';
   docs.forEach(function(d,id){
+    var pairInfo=d.pairs.length>0?' · '+d.pairs.length+' 组配对':'';
     var card=document.createElement('div');card.className='file-card';
     card.innerHTML=
       '<button class="fc-del" data-id="'+id+'" title="删除"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>'+
@@ -630,7 +692,30 @@ function openReader(id){
 }
 
 function renderDoc(d){
+  /* 初始化黄色文本索引表 */
+  currentYelMap=[];
+
   var html='';
+
+  /* ===== 汇总框 ===== */
+  if(d.pairs&&d.pairs.length>0){
+    html+='<div class="red-summary">';
+    html+='<div class="red-summary-title">';
+    html+='<svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>';
+    html+='红色标记汇总（点击复制对应答案）';
+    html+='<span class="pair-count">'+d.pairs.length+' 组配对</span>';
+    html+='</div>';
+    html+='<div class="btn-list">';
+    for(var i=0;i<d.pairs.length;i++){
+      var pair=d.pairs[i];
+      var idx=currentYelMap.length;
+      currentYelMap.push(pair.yelText);
+      html+='<button class="red-btn" data-yi="'+idx+'" title="点击复制答案">'+esc(pair.redText)+'<span class="arrow">→ 复制答案</span></button>';
+    }
+    html+='</div></div>';
+  }
+
+  /* ===== 文档内容 ===== */
   for(var i=0;i<d.blocks.length;i++){
     var block=d.blocks[i];
     if(block.type==='p'){
@@ -655,8 +740,42 @@ function renderDoc(d){
       html+='<hr style="border:none;border-top:2px dashed #ccc;margin:32px 0">';
     }
   }
+
   readerBody.innerHTML=html||'<p style="color:var(--paper-m);text-align:center;padding:40px">文档内容为空</p>';
 
+  /* ===== 绑定事件 ===== */
+  bindCopyEvents();
+}
+
+function bindCopyEvents(){
+  /* 红色按钮：点击复制对应的黄色内容 */
+  var redBtns=readerBody.querySelectorAll('.red-btn');
+  for(var i=0;i<redBtns.length;i++){
+    (function(btn){
+      btn.addEventListener('click',function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        var idx=parseInt(btn.getAttribute('data-yi'));
+        var text=currentYelMap[idx];
+        if(!text)return;
+        copyText(text);
+        /* 找到箭头span */
+        var arrow=btn.querySelector('.arrow');
+        var origArrow=arrow?arrow.textContent:'';
+        var origText=btn.childNodes[0]&&btn.childNodes[0].nodeType===3?btn.childNodes[0].textContent:btn.textContent;
+        btn.classList.add('copied');
+        if(arrow)arrow.textContent=' 已复制';
+        else btn.textContent=origText+' 已复制';
+        setTimeout(function(){
+          btn.classList.remove('copied');
+          if(arrow)arrow.textContent=origArrow;
+          else btn.textContent=origText;
+        },1200);
+      });
+    })(redBtns[i]);
+  }
+
+  /* 黄色高亮：点击复制自身 */
   var yelEls=readerBody.querySelectorAll('.yel-copy');
   for(var i=0;i<yelEls.length;i++){
     (function(el){
@@ -682,9 +801,17 @@ function renderContent(content){
       if(c.color)style+='color:#'+c.color.replace(/^#/,'')+';';
       html+=style?'<span style="'+style+'">'+esc(c.text)+'</span>':esc(c.text);
     }else if(c.type==='red'){
-      html+='<span class="red-text">'+esc(c.text)+'</span>';
+      if(c.yelText){
+        /* 有配对的黄色内容，渲染为可点击按钮 */
+        var idx=currentYelMap.length;
+        currentYelMap.push(c.yelText);
+        html+='<button class="red-btn" data-yi="'+idx+'" title="点击复制答案">'+esc(c.text)+'</button>';
+      }else{
+        /* 无配对，保持普通红色文字 */
+        html+='<span class="red-text">'+esc(c.text)+'</span>';
+      }
     }else if(c.type==='yel'){
-      html+='<span class="yel-copy" data-text="'+esc(c.text)+'" title="点击复制">'+esc(c.text)+'</span>';
+      html+='<span class="yel-copy" data-text="'+attrEsc(c.text)+'" title="点击复制">'+esc(c.text)+'</span>';
     }else if(c.type==='img'){
       html+='<img src="'+c.src+'" alt="图片">';
     }else if(c.type==='br'){
