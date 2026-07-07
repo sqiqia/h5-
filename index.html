@@ -31,15 +31,12 @@ window.addEventListener('load',function(){
   }
   *{margin:0;padding:0;box-sizing:border-box}
   body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--fg);min-height:100vh;overflow-x:hidden}
-
   .bg-a{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
   .bg-a::before{content:'';position:absolute;top:-12%;right:-6%;width:500px;height:500px;background:radial-gradient(circle,rgba(212,61,61,.04),transparent 70%);animation:blob 22s ease-in-out infinite}
   .bg-a::after{content:'';position:absolute;bottom:-8%;left:-6%;width:400px;height:400px;background:radial-gradient(circle,rgba(200,150,10,.03),transparent 70%);animation:blob 28s ease-in-out infinite reverse}
   @keyframes blob{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-25px) scale(1.08)}66%{transform:translate(-20px,15px) scale(.95)}}
   .bg-g{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(0,0,0,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.015) 1px,transparent 1px);background-size:56px 56px}
-
   .wrap{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:32px 24px 80px}
-
   header{text-align:center;margin-bottom:40px;animation:fu .6s ease-out}
   @keyframes fu{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
   .logo{display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:var(--r);background:linear-gradient(135deg,var(--red),var(--accent));margin-bottom:18px;box-shadow:0 4px 16px var(--red-glow)}
@@ -48,7 +45,6 @@ window.addEventListener('load',function(){
   header h1 em{font-style:normal;color:var(--red)}
   header p{margin-top:8px;color:var(--fg2);font-size:15px;font-weight:300}
   header p b{color:var(--yel);font-weight:600}
-
   .upload-zone{border:2px dashed var(--brd);border-radius:var(--rl);padding:100px 60px;text-align:center;cursor:pointer;transition:.25s;background:var(--bg2);position:relative;overflow:hidden;margin-bottom:36px;animation:fu .6s ease-out .08s both;min-height:380px;display:flex;flex-direction:column;align-items:center;justify-content:center}
   .upload-zone::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--red-glow),transparent 60%);opacity:0;transition:.25s}
   .upload-zone:hover,.upload-zone.over{border-color:var(--accent);background:var(--card)}
@@ -61,11 +57,9 @@ window.addEventListener('load',function(){
   .upload-zone h3 u{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
   .upload-zone p{position:relative;z-index:1;color:var(--fg3);font-size:14px;line-height:1.6}
   #fileInput{display:none}
-
   .sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;animation:fu .6s ease-out .14s both}
   .sec-head h2{font-size:18px;font-weight:600}
   .sec-head .count{color:var(--fg3);font-size:13px}
-
   .file-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;animation:fu .6s ease-out .18s both}
   .file-card{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:20px;cursor:pointer;transition:.25s;position:relative;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04)}
   .file-card::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--red-glow),transparent 50%);opacity:0;transition:.25s}
@@ -86,11 +80,9 @@ window.addEventListener('load',function(){
   .file-card:hover .fc-del{opacity:1}
   .fc-del:hover{background:rgba(212,61,61,.08);color:var(--red)}
   .fc-del svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
-
   .empty-state{text-align:center;padding:60px 20px;color:var(--fg3);animation:fu .6s ease-out .18s both}
   .empty-state svg{width:56px;height:56px;stroke:var(--brd2);fill:none;margin-bottom:16px;stroke-width:1.2}
   .empty-state p{font-size:14px}
-
   .env-error{display:none;position:fixed;inset:0;z-index:9999;background:rgba(255,255,255,.97);align-items:center;justify-content:center;padding:40px}
   .env-error.show{display:flex}
   .env-error-box{text-align:center;max-width:520px}
@@ -100,7 +92,6 @@ window.addEventListener('load',function(){
   .env-error-box p{font-size:15px;color:var(--fg2);line-height:1.8;margin-bottom:20px}
   .env-error-box code{display:block;background:var(--bg2);border:1px solid var(--brd);border-radius:var(--rs);padding:14px 18px;font-size:13px;color:var(--accent);text-align:left;word-break:break-all;margin-bottom:16px;font-family:monospace}
   .env-error-box .note{font-size:13px;color:var(--fg3);line-height:1.7}
-
   .reader{display:none;position:fixed;inset:0;z-index:100;background:var(--bg);flex-direction:column;animation:rfi .3s ease-out}
   .reader.open{display:flex}
   @keyframes rfi{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
@@ -114,12 +105,10 @@ window.addEventListener('load',function(){
   .r-stat .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
   .r-stat .dot.rd{background:var(--red)}
   .r-stat .dot.yl{background:var(--yel)}
-
   .reader-body{flex:1;overflow-y:auto;padding:48px 64px;color:var(--paper-t);font-family:'Noto Serif SC',serif;font-size:15px;line-height:1.9}
   .reader-body::-webkit-scrollbar{width:8px}
   .reader-body::-webkit-scrollbar-track{background:transparent}
   .reader-body::-webkit-scrollbar-thumb{background:var(--brd);border-radius:4px}
-
   .reader-body h1{font-size:26px;font-weight:900;color:#1a1a1a;margin:28px 0 14px;padding-bottom:10px;border-bottom:2px solid var(--paper-brd)}
   .reader-body > *:first-child:not(.red-summary){margin-top:0}
   .reader-body h2{font-size:21px;font-weight:700;color:#1a1a1a;margin:24px 0 10px}
@@ -136,42 +125,33 @@ window.addEventListener('load',function(){
   .reader-body th{background:#f4f4f6;font-weight:700}
   .reader-body img{max-width:100%;height:auto;border-radius:4px;margin:10px 0}
   .reader-body blockquote{border-left:4px solid var(--accent);padding:6px 18px;margin:14px 0;background:#faf8f4;color:var(--paper-m);font-style:italic}
-
   .red-text{color:var(--red);font-weight:700}
 
-  /* 红色可点击按钮 */
+  /* 红色可点击按钮 - 使用 pointer-events 确保可点击 */
   .red-btn{
-    color:var(--red);font-weight:700;cursor:pointer;
-    background:rgba(212,61,61,.06);border:1px solid rgba(212,61,61,.22);
+    color:var(--red)!important;font-weight:700;cursor:pointer;
+    background:rgba(212,61,61,.07);border:1px solid rgba(212,61,61,.25);
     padding:2px 12px;border-radius:5px;transition:all .2s;
     display:inline;line-height:1.7;font-family:'Noto Serif SC',serif;
-    font-size:inherit;vertical-align:middle;margin:0 1px;position:relative;
-    outline:none;
+    font-size:inherit;vertical-align:middle;margin:0 1px;
+    position:relative;outline:none;
+    pointer-events:auto!important;
+    -webkit-appearance:none;appearance:none;
   }
-  .red-btn:hover{background:rgba(212,61,61,.16);border-color:rgba(212,61,61,.45);box-shadow:0 0 0 3px rgba(212,61,61,.07)}
+  .red-btn:hover{background:rgba(212,61,61,.18);border-color:rgba(212,61,61,.5);box-shadow:0 0 0 3px rgba(212,61,61,.08)}
   .red-btn:active{transform:scale(.97)}
-  .red-btn.copied{background:rgba(58,157,62,.1);border-color:rgba(58,157,62,.35);color:#2e7d32;box-shadow:none}
+  .red-btn.copied{background:rgba(58,157,62,.12)!important;border-color:rgba(58,157,62,.4)!important;color:#2e7d32!important;box-shadow:none}
   .red-btn::after{content:'';position:absolute;bottom:-2px;left:50%;transform:translateX(-50%) scaleX(0);width:60%;height:2px;background:var(--red);border-radius:1px;transition:transform .2s}
   .red-btn:hover::after{transform:translateX(-50%) scaleX(1)}
-  .red-btn.copied::after{background:#2e7d32}
+  .red-btn.copied::after{background:#2e7d32;transform:translateX(-50%) scaleX(0)}
 
-  /* 红色标记汇总框 */
-  .red-summary{
-    background:linear-gradient(135deg,#fef8f8 0%,#fdf2f2 100%);
-    border:1px solid rgba(212,61,61,.15);border-radius:var(--r);
-    padding:22px 26px;margin-bottom:32px;animation:fu .4s ease-out;
-  }
-  .red-summary-title{
-    font-size:14px;font-weight:700;color:var(--red);margin-bottom:16px;
-    display:flex;align-items:center;gap:8px;font-family:'DM Sans',sans-serif;letter-spacing:.3px;
-  }
+  /* 汇总框 */
+  .red-summary{background:linear-gradient(135deg,#fef8f8 0%,#fdf2f2 100%);border:1px solid rgba(212,61,61,.15);border-radius:var(--r);padding:22px 26px;margin-bottom:32px;animation:fu .4s ease-out}
+  .red-summary-title{font-size:14px;font-weight:700;color:var(--red);margin-bottom:16px;display:flex;align-items:center;gap:8px;font-family:'DM Sans',sans-serif;letter-spacing:.3px}
   .red-summary-title svg{width:16px;height:16px;stroke:var(--red);fill:none;stroke-width:2;flex-shrink:0}
   .red-summary-title .pair-count{margin-left:auto;font-size:12px;font-weight:500;color:var(--fg3);font-family:'DM Sans',sans-serif}
   .red-summary .btn-list{display:flex;flex-wrap:wrap;gap:8px}
-  .red-summary .red-btn{
-    display:inline-flex;align-items:center;gap:5px;
-    padding:7px 16px;font-size:13px;white-space:nowrap;
-  }
+  .red-summary .red-btn{display:inline-flex;align-items:center;gap:5px;padding:7px 16px;font-size:13px;white-space:nowrap}
   .red-summary .red-btn .arrow{color:var(--fg3);font-size:11px;font-weight:400;opacity:.5;transition:all .2s;font-family:'DM Sans',sans-serif}
   .red-summary .red-btn:hover .arrow{opacity:1;color:var(--red)}
   .red-summary .red-btn.copied .arrow{display:none}
@@ -187,23 +167,16 @@ window.addEventListener('load',function(){
   .toast.info{background:#eaf3fa;border:1px solid #b8d8ee;color:#1e6fa0}
   @keyframes ti{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
   @keyframes to{from{opacity:1}to{opacity:0;transform:translateX(30px)}}
-
   .loader-o{display:none;position:absolute;inset:0;background:rgba(255,255,255,.88);z-index:10;align-items:center;justify-content:center;flex-direction:column;gap:14px;border-radius:var(--rl)}
   .loader-o.on{display:flex}
   .spinner{width:36px;height:36px;border:3px solid var(--brd);border-top-color:var(--accent);border-radius:50%;animation:sp .7s linear infinite}
   @keyframes sp{to{transform:rotate(360deg)}}
   .loader-o span{color:var(--fg2);font-size:13px}
-
   @media(max-width:768px){
-    .wrap{padding:20px 14px 60px}
-    header h1{font-size:28px}
-    .upload-zone{padding:60px 24px;min-height:280px}
-    .file-grid{grid-template-columns:1fr}
-    .reader-bar{padding:10px 14px}
-    .reader-body{padding:24px 18px}
-    .red-summary{padding:16px 18px}
-    .red-summary .btn-list{gap:6px}
-    .red-summary .red-btn{padding:5px 12px;font-size:12px}
+    .wrap{padding:20px 14px 60px}header h1{font-size:28px}
+    .upload-zone{padding:60px 24px;min-height:280px}.file-grid{grid-template-columns:1fr}
+    .reader-bar{padding:10px 14px}.reader-body{padding:24px 18px}
+    .red-summary{padding:16px 18px}.red-summary .btn-list{gap:6px}.red-summary .red-btn{padding:5px 12px;font-size:12px}
   }
   @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
@@ -212,7 +185,6 @@ window.addEventListener('load',function(){
 <div class="bg-a"></div>
 <div class="bg-g"></div>
 <div class="toast-c" id="toastC"></div>
-
 <div class="env-error" id="envError">
   <div class="env-error-box">
     <div class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
@@ -222,14 +194,12 @@ window.addEventListener('load',function(){
     <p class="note">请复制上面的完整链接，在新标签页中直接打开即可正常使用。</p>
   </div>
 </div>
-
 <div class="wrap" id="homeView">
   <header>
     <div class="logo"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><polyline points="14 2 14 8 20 8"/></svg></div>
     <h1>DocX <em>智能</em>解析器</h1>
     <p><b>红色</b> 文字点击复制答案 · <b>黄色高亮</b> 点击即复制</p>
   </header>
-
   <div class="upload-zone" id="uploadZone">
     <div class="loader-o" id="loader"><div class="spinner"></div><span>正在解析文档...</span></div>
     <div class="u-icon">
@@ -239,24 +209,16 @@ window.addEventListener('load',function(){
     <p>支持同时上传多个 .docx 文件</p>
     <input type="file" id="fileInput" accept=".docx" multiple>
   </div>
-
-  <div class="sec-head" id="secHead" style="display:none">
-    <h2>已上传文档</h2>
-    <span class="count" id="docCount"></span>
-  </div>
+  <div class="sec-head" id="secHead" style="display:none"><h2>已上传文档</h2><span class="count" id="docCount"></span></div>
   <div class="file-grid" id="fileGrid"></div>
   <div class="empty-state" id="emptyState">
     <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
     <p>还没有上传任何文档</p>
   </div>
 </div>
-
 <div class="reader" id="reader">
   <div class="reader-bar">
-    <button class="back-btn" id="backBtn">
-      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-      返回
-    </button>
+    <button class="back-btn" id="backBtn"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>返回</button>
     <span class="r-name" id="rName">-</span>
     <div class="r-stats" id="rStats"></div>
   </div>
@@ -265,91 +227,48 @@ window.addEventListener('load',function(){
 
 <script>
 function checkEnv(){
-  try{
-    if(window.self!==window.top){
-      var frame=window.frameElement;
-      if(frame&&(frame.getAttribute('sandbox')||'').indexOf('allow-same-origin')===-1){showEnvError('iframe');return false}
-    }
-  }catch(e){showEnvError('iframe');return false}
+  try{if(window.self!==window.top){var f=window.frameElement;if(f&&(f.getAttribute('sandbox')||'').indexOf('allow-same-origin')===-1){showEnvError('iframe');return false}}}
+  catch(e){showEnvError('iframe');return false}
   if((location.hostname==='github.com'||location.hostname==='www.github.com')&&location.pathname.indexOf('/blob/')!==-1){showEnvError('preview');return false}
   return true;
 }
 function showEnvError(type){
-  var el=document.getElementById('envError'),title=document.getElementById('envTitle'),desc=document.getElementById('envDesc'),urlEl=document.getElementById('envUrl');
-  if(type==='iframe'){title.textContent='请在浏览器中直接打开此页面';desc.textContent='你当前在嵌入框架中打开，文件上传功能被禁用。请复制下方链接，在新标签页中打开：'}
-  else if(type==='preview'){title.textContent='请通过 GitHub Pages 链接访问';desc.textContent='你正在 GitHub 文件预览页面，此处无法使用上传功能。请前往 GitHub Pages 地址打开：'}
-  else if(type==='cdn'){title.textContent='JSZip 库加载失败';desc.textContent='无法加载文档解析所需的库，请检查网络连接后刷新页面。';urlEl.style.display='none'}
-  if(type!=='cdn'){var u=location.href.replace(/^https?:\/\/github\.com\//,'https://').replace(/\/blob\/[^/]+\//,'/');urlEl.textContent=u;urlEl.style.display='block'}
+  var el=document.getElementById('envError'),t=document.getElementById('envTitle'),d=document.getElementById('envDesc'),u=document.getElementById('envUrl');
+  if(type==='iframe'){t.textContent='请在浏览器中直接打开此页面';d.textContent='你当前在嵌入框架中打开，文件上传功能被禁用。请复制下方链接，在新标签页中打开：'}
+  else if(type==='preview'){t.textContent='请通过 GitHub Pages 链接访问';d.textContent='你正在 GitHub 文件预览页面，此处无法使用上传功能。请前往 GitHub Pages 地址打开：'}
+  else if(type==='cdn'){t.textContent='JSZip 库加载失败';d.textContent='无法加载文档解析所需的库，请检查网络连接后刷新页面。';u.style.display='none'}
+  if(type!=='cdn'){var url=location.href.replace(/^https?:\/\/github\.com\//,'https://').replace(/\/blob\/[^/]+\//,'/');u.textContent=url;u.style.display='block'}
   el.classList.add('show');
 }
 if(checkEnv())initApp();
 
 function initApp(){
 'use strict';
-
 var W='http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 var R='http://schemas.openxmlformats.org/officeDocument/2006/relationships';
-var uploadZone=document.getElementById('uploadZone');
-var fileInput=document.getElementById('fileInput');
-var loader=document.getElementById('loader');
-var fileGrid=document.getElementById('fileGrid');
-var secHead=document.getElementById('secHead');
-var docCount=document.getElementById('docCount');
-var emptyState=document.getElementById('emptyState');
-var reader=document.getElementById('reader');
-var backBtn=document.getElementById('backBtn');
-var rName=document.getElementById('rName');
-var rStats=document.getElementById('rStats');
-var readerBody=document.getElementById('readerBody');
+var uploadZone=document.getElementById('uploadZone'),fileInput=document.getElementById('fileInput');
+var loader=document.getElementById('loader'),fileGrid=document.getElementById('fileGrid');
+var secHead=document.getElementById('secHead'),docCount=document.getElementById('docCount');
+var emptyState=document.getElementById('emptyState'),reader=document.getElementById('reader');
+var backBtn=document.getElementById('backBtn'),rName=document.getElementById('rName');
+var rStats=document.getElementById('rStats'),readerBody=document.getElementById('readerBody');
 var toastC=document.getElementById('toastC');
-var docs=new Map();
-var docIdCounter=0;
-/* 当前渲染时，按顺序存储所有黄色文本，红色按钮通过索引引用 */
+var docs=new Map(),docIdCounter=0;
 var currentYelMap=[];
 
 function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
 function attrEsc(s){return esc(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 function fmtSize(b){if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(1)+' MB'}
 function fmtDate(d){if(!d||isNaN(d))return'未知';return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
-
-function toast(msg,type){
-  type=type||'info';
-  var t=document.createElement('div');t.className='toast '+type;t.textContent=msg;
-  toastC.appendChild(t);
-  setTimeout(function(){t.style.animation='to .3s ease-in forwards';setTimeout(function(){t.remove()},300)},2500);
-}
-
-function gw(parent,tag){return parent.getElementsByTagNameNS(W,tag)}
-function wval(el,attr){if(!el)return null;var v=el.getAttributeNS(W,attr);if(!v)v=el.getAttribute('w:'+attr);if(!v)v=el.getAttribute(attr);return v}
-function rembed(el){if(!el)return null;var v=el.getAttributeNS(R,'embed');if(!v)v=el.getAttribute('r:embed');return v}
-function isBlank(text){return /^\s*$/.test(text)}
-
-function isYellowFill(hex){
-  if(!hex)return false;
-  var h=hex.replace(/^#/,'');
-  if(h.length===4)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
-  if(h.length!==6)return false;
-  var r=parseInt(h.substring(0,2),16),g=parseInt(h.substring(2,4),16),b=parseInt(h.substring(4,6),16);
-  return r>170&&g>150&&b<130;
-}
-function isRed(hex){
-  if(!hex)return false;
-  var h=hex.replace(/^#/,'');
-  if(h.length===4)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
-  if(h.length!==6)return false;
-  var r=parseInt(h.substring(0,2),16),g=parseInt(h.substring(2,4),16),b=parseInt(h.substring(4,6),16);
-  return r>150&&r>g*1.6&&r>b*1.6;
-}
-function isYellow(hlVal,shdFill){
-  if(hlVal&&hlVal.toLowerCase()==='yellow')return true;
-  return isYellowFill(shdFill);
-}
-function isParagraphShadingYellow(para){
-  var pPr=gw(para,'pPr')[0];if(!pPr)return false;
-  var shd=gw(pPr,'shd')[0];if(!shd)return false;
-  var val=wval(shd,'val');if(val&&val!=='clear')return false;
-  return isYellowFill(wval(shd,'fill'));
-}
+function toast(msg,type){type=type||'info';var t=document.createElement('div');t.className='toast '+type;t.textContent=msg;toastC.appendChild(t);setTimeout(function(){t.style.animation='to .3s ease-in forwards';setTimeout(function(){t.remove()},300)},2500)}
+function gw(p,t){return p.getElementsByTagNameNS(W,t)}
+function wv(e,a){if(!e)return null;var v=e.getAttributeNS(W,a);if(!v)v=e.getAttribute('w:'+a);if(!v)v=e.getAttribute(a);return v}
+function re(e){if(!e)return null;var v=e.getAttributeNS(R,'embed');if(!v)v=e.getAttribute('r:embed');return v}
+function isBlank(t){return/^\s*$/.test(t)}
+function isYFill(h){if(!h)return false;var s=h.replace(/^#/,'');if(s.length===4)s=s[0]+s[0]+s[1]+s[1]+s[2]+s[2];if(s.length!==6)return false;var r=parseInt(s.substring(0,2),16),g=parseInt(s.substring(2,4),16),b=parseInt(s.substring(4,6),16);return r>170&&g>150&&b<130}
+function isR(h){if(!h)return false;var s=h.replace(/^#/,'');if(s.length===4)s=s[0]+s[0]+s[1]+s[1]+s[2]+s[2];if(s.length!==6)return false;var r=parseInt(s.substring(0,2),16),g=parseInt(s.substring(2,4),16),b=parseInt(s.substring(4,6),16);return r>150&&r>g*1.6&&r>b*1.6}
+function isY(hl,sf){if(hl&&hl.toLowerCase()==='yellow')return true;return isYFill(sf)}
+function isPShdY(para){var p=gw(para,'pPr')[0];if(!p)return false;var s=gw(p,'shd')[0];if(!s)return false;var v=wv(s,'val');if(v&&v!=='clear')return false;return isYFill(wv(s,'fill'))}
 
 uploadZone.addEventListener('click',function(e){if(!e.target.closest('.loader-o'))fileInput.click()});
 uploadZone.addEventListener('dragover',function(e){e.preventDefault();uploadZone.classList.add('over')});
@@ -367,221 +286,113 @@ function handleFile(file){
   file.arrayBuffer().then(function(buf){return parseDocx(buf)}).then(function(data){
     var id=++docIdCounter;
     docs.set(id,{name:file.name,size:file.size,date:file.lastModified,blocks:data.blocks,redCount:data.redCount,yelCount:data.yelCount,pairs:data.pairs||[]});
-    renderFileList();
-    toast('解析成功: '+file.name,'ok');
-  }).catch(function(err){
-    console.error(err);toast('解析失败: '+file.name+' — '+(err.message||'未知错误'),'err');
-  }).finally(function(){loader.classList.remove('on')});
+    renderFileList();toast('解析成功: '+file.name,'ok');
+  }).catch(function(err){console.error(err);toast('解析失败: '+file.name,'err')}).finally(function(){loader.classList.remove('on')});
 }
 
-/* 段落内合并连续同色片段 */
-function mergeInParagraph(content){
-  var out=[];
-  for(var i=0;i<content.length;i++){
-    var item=content[i];
-    if(item.type==='red'&&out.length>0&&out[out.length-1].type==='red'){out[out.length-1].text+=item.text}
-    else if(item.type==='yel'&&out.length>0&&out[out.length-1].type==='yel'){out[out.length-1].text+=item.text}
-    else{out.push(item)}
-  }
-  return out;
-}
+function mergeInP(c){var o=[];for(var i=0;i<c.length;i++){var it=c[i];if(it.type==='red'&&o.length>0&&o[o.length-1].type==='red')o[o.length-1].text+=it.text;else if(it.type==='yel'&&o.length>0&&o[o.length-1].type==='yel')o[o.length-1].text+=it.text;else o.push(it)}return o}
 
-/* 跨段落/跨单元格合并连续同色 */
-function mergeAcrossBlocks(blocks){
-  var lastType=null,lastRef=null;
+function mergeAcross(blocks){
+  var lt=null,lr=null;
   for(var b=0;b<blocks.length;b++){
-    var paras=getParagraphs(blocks[b]);
-    for(var p=0;p<paras.length;p++){
-      var content=paras[p];
-      var merged=mergeInParagraph(content);
-      content.length=0;
-      for(var m=0;m<merged.length;m++)content.push(merged[m]);
-      for(var i=0;i<content.length;i++){
-        var item=content[i];
-        if(item.type==='red'||item.type==='yel'){
-          if(lastType===item.type&&lastRef){lastRef.arr[lastRef.idx].text+=item.text;content.splice(i,1);i--}
-          else{lastType=item.type;lastRef={arr:content,idx:i}}
-        }else if(item.type==='txt'&&isBlank(item.text)){content.splice(i,1);i--}
-        else{lastType=null;lastRef=null}
+    var ps=getP(blocks[b]);
+    for(var p=0;p<ps.length;p++){
+      var c=ps[p],m=mergeInP(c);c.length=0;for(var x=0;x<m.length;x++)c.push(m[x]);
+      for(var i=0;i<c.length;i++){
+        var it=c[i];
+        if(it.type==='red'||it.type==='yel'){if(lt===it.type&&lr){lr.a[lr.i].text+=it.text;c.splice(i,1);i--}else{lt=it.type;lr={a:c,i:i}}}
+        else if(it.type==='txt'&&isBlank(it.text)){c.splice(i,1);i--}
+        else{lt=null;lr=null}
       }
     }
   }
 }
 
-function getParagraphs(block){
+/* ★ getP: 获取单个 block 中的所有段落 content 数组 */
+function getP(block){
   var res=[];
   if(block.type==='p')res.push(block.content);
-  else if(block.type==='tbl'){
-    for(var r=0;r<block.rows.length;r++)
-      for(var c=0;c<block.rows[r].length;c++)
-        for(var p=0;p<block.rows[r][c].length;p++)
-          res.push(block.rows[r][c][p].content);
-  }
+  else if(block.type==='tbl'){for(var r=0;r<block.rows.length;r++)for(var c=0;c<block.rows[r].length;c++)for(var p=0;p<block.rows[r][c].length;p++)res.push(block.rows[r][c][p].content)}
   return res;
 }
 
 /*
- * 关键函数：建立红色→黄色一一对应关系
- * 规则：红色后面一定有黄色，中间可能有黑色文字，但不打断配对
- * 只有遇到下一个红色时，前一个红色才被视为无配对
+ * ★★★ 核心修复：之前这里写的是 getParagraphs(blocks) 把整个数组当单个block传入，
+ * 导致 block.type 是 undefined，返回空数组，配对永远为空！
+ * 现在正确遍历每个 block。
  */
-function buildRedYelPairs(blocks){
-  /* 把所有片段按文档顺序拉平 */
-  var allItems=[];
-  var allParas=getParagraphs(blocks);
-  for(var p=0;p<allParas.length;p++)
-    for(var i=0;i<allParas[p].length;i++)
-      allItems.push(allParas[p][i]);
-
-  var pairs=[];
-  var pairId=0;
-  var pendingRed=null;
-
-  for(var i=0;i<allItems.length;i++){
-    var item=allItems[i];
-    if(item.type==='red'){
-      /*
-       * 遇到新的红色：
-       * 如果之前有pendingRed还没配对上黄色，说明它没有对应答案，不加入pairs
-       * 然后把当前红色设为新的pendingRed
-       */
-      pendingRed=item;
-      item.pairId='rp_'+(pairId++);
-    }else if(item.type==='yel'){
-      if(pendingRed){
-        /* ★ 配对成功：把这个黄色文本写回红色片段的yelText属性 */
-        pendingRed.yelText=item.text;
-        item.pairId=pendingRed.pairId;
-        pairs.push({id:pendingRed.pairId,redText:pendingRed.text,yelText:item.text});
-        pendingRed=null;
+function buildPairs(blocks){
+  var all=[];
+  for(var b=0;b<blocks.length;b++){
+    var ps=getP(blocks[b]);
+    for(var p=0;p<ps.length;p++)
+      for(var i=0;i<ps[p].length;i++)
+        all.push(ps[p][i]);
+  }
+  var pairs=[],pid=0,pr=null;
+  for(var i=0;i<all.length;i++){
+    var it=all[i];
+    if(it.type==='red'){
+      pr=it;it.pairId='rp_'+(pid++);
+    }else if(it.type==='yel'){
+      if(pr){
+        pr.yelText=it.text;
+        it.pairId=pr.pairId;
+        pairs.push({id:pr.pairId,redText:pr.text,yelText:it.text});
+        pr=null;
       }
-      /* 没有pending红的时候，这个黄色不参与配对 */
     }
-    /* ★ 关键修复：黑色文字、图片、换行等全部不打断配对，什么都不做 */
+    /* 黑色文字、图片、换行等全部不打断配对 */
+  }
+  console.log('[DocX] 配对结果:', pairs.length, '组');
+  for(var k=0;k<pairs.length;k++){
+    console.log('  红['+pairs[k].redText.substring(0,20)+'] → 黄['+pairs[k].yelText.substring(0,20)+']');
   }
   return pairs;
 }
 
-/* ===== 解析 docx ===== */
 function parseDocx(buf){
   return JSZip.loadAsync(buf).then(function(zip){
-    return zip.file('word/document.xml').async('text').then(function(docXml){
-      var parser=new DOMParser();
-      var doc=parser.parseFromString(docXml,'application/xml');
-      var images={};
-      var relsFile=zip.file('word/_rels/document.xml.rels');
-      var relsPromise=relsFile?relsFile.async('text').then(function(rXml){
-        var rDoc=parser.parseFromString(rXml,'application/xml');
-        var rels=rDoc.getElementsByTagName('Relationship');
-        var imgPromises=[];
-        for(var i=0;i<rels.length;i++){
-          (function(rel){
-            var type=rel.getAttribute('Type')||'';
-            if(type.indexOf('image')!==-1){
-              var rId=rel.getAttribute('Id');
-              var target=rel.getAttribute('Target')||'';
-              if(target.indexOf('word/')!==0)target='word/'+target;
-              var imgFile=zip.file(target);
-              if(imgFile)imgPromises.push(imgFile.async('blob').then(function(blob){images[rId]=URL.createObjectURL(blob)}));
-            }
-          })(rels[i]);
-        }
-        return Promise.all(imgPromises);
+    return zip.file('word/document.xml').async('text').then(function(xml){
+      var parser=new DOMParser(),doc=parser.parseFromString(xml,'application/xml'),images={};
+      var rf=zip.file('word/_rels/document.xml.rels');
+      var rp=rf?rf.async('text').then(function(rx){
+        var rd=parser.parseFromString(rx,'application/xml'),rls=rd.getElementsByTagName('Relationship'),ips=[];
+        for(var i=0;i<rls.length;i++){(function(rel){var tp=rel.getAttribute('Type')||'';if(tp.indexOf('image')!==-1){var rid=rel.getAttribute('Id'),tgt=rel.getAttribute('Target')||'';if(tgt.indexOf('word/')!==0)tgt='word/'+tgt;var f=zip.file(tgt);if(f)ips.push(f.async('blob').then(function(b){images[rid]=URL.createObjectURL(b)}))}})(rls[i])}
+        return Promise.all(ips);
       }):Promise.resolve();
-
-      return relsPromise.then(function(){
-        var body=gw(doc,'body')[0];
-        var redCount=0,yelCount=0;
-        var blocks=[];
-
-        function parseRuns(parent,contentArr,paraYellow){
-          var runs=gw(parent,'r');
+      return rp.then(function(){
+        var body=gw(doc,'body')[0],rc=0,yc=0,blocks=[];
+        function parseRuns(par,ca,py){
+          var runs=gw(par,'r');
           for(var ri=0;ri<runs.length;ri++){
-            var run=runs[ri];
-            var rPr=gw(run,'rPr')[0];
-            var bold=false,italic=false,underline=false,colorVal=null,hlVal=null,shdFill=null;
-            if(rPr){
-              if(gw(rPr,'b').length)bold=true;
-              if(gw(rPr,'i').length)italic=true;
-              var uEl=gw(rPr,'u')[0];if(uEl){var uv=wval(uEl,'val');if(uv!=='none')underline=true}
-              var cEl=gw(rPr,'color')[0];if(cEl)colorVal=wval(cEl,'val');
-              var hEl=gw(rPr,'highlight')[0];if(hEl)hlVal=wval(hEl,'val');
-              var sEl=gw(rPr,'shd')[0];if(sEl){var sv=wval(sEl,'val');if(sv==='clear')shdFill=wval(sEl,'fill')}
-            }
-            var allEls=run.getElementsByTagName('*'),foundImg=false;
-            for(var ei=0;ei<allEls.length;ei++){
-              if(allEls[ei].localName==='blip'){
-                var embed=rembed(allEls[ei]);
-                if(embed&&images[embed]){contentArr.push({type:'img',src:images[embed]});foundImg=true;break}
-              }
-            }
-            if(foundImg)continue;
-            if(gw(run,'tab').length){contentArr.push({type:'tab'});continue}
-            var brs=gw(run,'br');
-            if(brs.length){contentArr.push({type:wval(brs[0],'type')==='page'?'pagebreak':'br'});continue}
-            var ts=gw(run,'t');if(!ts.length)continue;
-            var text='';for(var ti=0;ti<ts.length;ti++)text+=ts[ti].textContent;
-            if(!text)continue;
-            var red=isRed(colorVal);
-            var yel=!red&&isYellow(hlVal,shdFill);
-            if(red){contentArr.push({type:'red',text:text});redCount++}
-            else if(yel){contentArr.push({type:'yel',text:text});yelCount++}
-            else if(paraYellow&&text.trim()){contentArr.push({type:'yel',text:text});yelCount++}
-            else{contentArr.push({type:'txt',text:text,bold:bold,italic:italic,underline:underline,color:colorVal})}
+            var run=runs[ri],rPr=gw(run,'rPr')[0],bold=false,italic=false,underline=false,cv=null,hl=null,sf=null;
+            if(rPr){if(gw(rPr,'b').length)bold=true;if(gw(rPr,'i').length)italic=true;var ue=gw(rPr,'u')[0];if(ue){var uv=wv(ue,'val');if(uv!=='none')underline=true}var ce=gw(rPr,'color')[0];if(ce)cv=wv(ce,'val');var he=gw(rPr,'highlight')[0];if(he)hl=wv(he,'val');var se=gw(rPr,'shd')[0];if(se){var sv=wv(se,'val');if(sv==='clear')sf=wv(se,'fill')}}
+            var ae=run.getElementsByTagName('*'),fi=false;
+            for(var ei=0;ei<ae.length;ei++){if(ae[ei].localName==='blip'){var em=re(ae[ei]);if(em&&images[em]){ca.push({type:'img',src:images[em]});fi=true;break}}}
+            if(fi)continue;
+            if(gw(run,'tab').length){ca.push({type:'tab'});continue}
+            var brs=gw(run,'br');if(brs.length){ca.push({type:wv(brs[0],'type')==='page'?'pagebreak':'br'});continue}
+            var ts=gw(run,'t');if(!ts.length)continue;var text='';for(var ti=0;ti<ts.length;ti++)text+=ts[ti].textContent;if(!text)continue;
+            var red=isR(cv),yel=!red&&isY(hl,sf);
+            if(red){ca.push({type:'red',text:text});rc++}
+            else if(yel){ca.push({type:'yel',text:text});yc++}
+            else if(py&&text.trim()){ca.push({type:'yel',text:text});yc++}
+            else{ca.push({type:'txt',text:text,bold:bold,italic:italic,underline:underline,color:cv})}
           }
         }
-
-        function getHeading(para){
-          var pPr=gw(para,'pPr')[0];if(!pPr)return 0;
-          var pStyle=gw(pPr,'pStyle')[0];if(!pStyle)return 0;
-          var val=wval(pStyle,'val')||'';
-          var m=val.match(/heading\s*(\d+)/i)||val.match(/^(\d+)$/);
-          return m?parseInt(m[1]):0;
+        function getH(para){var p=gw(para,'pPr')[0];if(!p)return 0;var s=gw(p,'pStyle')[0];if(!s)return 0;var v=wv(s,'val')||'';var m=v.match(/heading\s*(\d+)/i)||v.match(/^(\d+)$/);return m?parseInt(m[1]):0}
+        var ch=body.children;
+        for(var ci=0;ci<ch.length;ci++){
+          var c=ch[ci],ln=c.localName;
+          if(ln==='p'){var h=getH(c),py=isPShdY(c),ct=[];parseRuns(c,ct,py);blocks.push({type:'p',content:ct,heading:h})}
+          else if(ln==='tbl'){var rows=[],trs=gw(c,'tr');for(var tri=0;tri<trs.length;tri++){var cells=[],tcs=gw(trs[tri],'tc');for(var tci=0;tci<tcs.length;tci++){var cc=[],ps=gw(tcs[tci],'p');for(var pi=0;pi<ps.length;pi++){var py=isPShdY(ps[pi]),ct=[];parseRuns(ps[pi],ct,py);cc.push({type:'p',content:ct,heading:0})}cells.push(cc)}rows.push(cells)}blocks.push({type:'tbl',rows:rows})}
         }
-
-        var children=body.children;
-        for(var ci=0;ci<children.length;ci++){
-          var child=children[ci],ln=child.localName;
-          if(ln==='p'){
-            var heading=getHeading(child);
-            var paraYellow=isParagraphShadingYellow(child);
-            var content=[];parseRuns(child,content,paraYellow);
-            blocks.push({type:'p',content:content,heading:heading});
-          }else if(ln==='tbl'){
-            var rows=[],trs=gw(child,'tr');
-            for(var tri=0;tri<trs.length;tri++){
-              var cells=[],tcs=gw(trs[tri],'tc');
-              for(var tci=0;tci<tcs.length;tci++){
-                var cellContent=[],ps=gw(tcs[tci],'p');
-                for(var pi=0;pi<ps.length;pi++){
-                  var paraYellow=isParagraphShadingYellow(ps[pi]);
-                  var content=[];parseRuns(ps[pi],content,paraYellow);
-                  cellContent.push({type:'p',content:content,heading:0});
-                }
-                cells.push(cellContent);
-              }
-              rows.push(cells);
-            }
-            blocks.push({type:'tbl',rows:rows});
-          }
-        }
-
-        mergeAcrossBlocks(blocks);
-
-        /* ★ 建立红色→黄色配对，并直接修改红色片段的yelText属性 */
-        var pairs=buildRedYelPairs(blocks);
-
-        /* 重新统计（合并后） */
-        redCount=0;yelCount=0;
-        for(var bi=0;bi<blocks.length;bi++){
-          var bparas=getParagraphs(blocks[bi]);
-          for(var bpi=0;bpi<bparas.length;bpi++)
-            for(var bii=0;bii<bparas[bpi].length;bii++){
-              if(bparas[bpi][bii].type==='red')redCount++;
-              else if(bparas[bpi][bii].type==='yel')yelCount++;
-            }
-        }
-        return {blocks:blocks,redCount:redCount,yelCount:yelCount,pairs:pairs};
+        mergeAcross(blocks);
+        var pairs=buildPairs(blocks);
+        rc=0;yc=0;
+        for(var bi=0;bi<blocks.length;bi++){var bp=getP(blocks[bi]);for(var bpi=0;bpi<bp.length;bpi++)for(var bii=0;bii<bp[bpi].length;bii++){if(bp[bpi][bii].type==='red')rc++;else if(bp[bpi][bii].type==='yel')yc++}}
+        return {blocks:blocks,redCount:rc,yelCount:yc,pairs:pairs};
       });
     });
   });
@@ -590,15 +401,10 @@ function parseDocx(buf){
 function renderFileList(){
   fileGrid.innerHTML='';
   if(docs.size===0){secHead.style.display='none';emptyState.style.display='';return}
-  secHead.style.display='';emptyState.style.display='none';
-  docCount.textContent=docs.size+' 个文档';
+  secHead.style.display='';emptyState.style.display='none';docCount.textContent=docs.size+' 个文档';
   docs.forEach(function(d,id){
     var card=document.createElement('div');card.className='file-card';
-    card.innerHTML=
-      '<button class="fc-del" data-id="'+id+'" title="删除"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>'+
-      '<div class="fc-inner"><div class="fc-top"><div class="fc-icon"><span>DOCX</span></div>'+
-      '<div class="fc-info"><div class="fc-name">'+esc(d.name)+'</div><div class="fc-meta">'+fmtSize(d.size)+' · '+fmtDate(new Date(d.date))+'</div></div></div>'+
-      '<div class="fc-badges"><span class="badge red">'+d.redCount+' 红色标记</span><span class="badge yel">'+d.yelCount+' 黄色高亮</span></div></div>';
+    card.innerHTML='<button class="fc-del" data-id="'+id+'" title="删除"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button><div class="fc-inner"><div class="fc-top"><div class="fc-icon"><span>DOCX</span></div><div class="fc-info"><div class="fc-name">'+esc(d.name)+'</div><div class="fc-meta">'+fmtSize(d.size)+' · '+fmtDate(new Date(d.date))+'</div></div></div><div class="fc-badges"><span class="badge red">'+d.redCount+' 红色标记</span><span class="badge yel">'+d.yelCount+' 黄色高亮</span></div></div>';
     card.addEventListener('click',function(e){if(!e.target.closest('.fc-del'))openReader(id)});
     card.querySelector('.fc-del').addEventListener('click',function(e){e.stopPropagation();docs.delete(id);renderFileList();toast('已删除','info')});
     fileGrid.appendChild(card);
@@ -609,145 +415,97 @@ function openReader(id){
   var d=docs.get(id);if(!d)return;
   rName.textContent=d.name;
   rStats.innerHTML='<span class="r-stat"><span class="dot rd"></span>'+d.redCount+' 红</span><span class="r-stat"><span class="dot yl"></span>'+d.yelCount+' 黄</span>';
-  renderDoc(d);
-  reader.classList.add('open');
-  document.body.style.overflow='hidden';
-  readerBody.scrollTop=0;
+  renderDoc(d);reader.classList.add('open');document.body.style.overflow='hidden';readerBody.scrollTop=0;
 }
 
 function renderDoc(d){
-  /* 重置黄色文本索引表 */
   currentYelMap=[];
   var html='';
 
-  /* ===== 汇总框：列出所有红色按钮 ===== */
+  /* 汇总框 */
   if(d.pairs&&d.pairs.length>0){
-    html+='<div class="red-summary">';
-    html+='<div class="red-summary-title">';
+    html+='<div class="red-summary"><div class="red-summary-title">';
     html+='<svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>';
     html+='红色标记汇总（点击复制对应答案）';
     html+='<span class="pair-count">'+d.pairs.length+' 组配对</span>';
     html+='</div><div class="btn-list">';
     for(var i=0;i<d.pairs.length;i++){
-      var pair=d.pairs[i];
-      var idx=currentYelMap.length;
+      var pair=d.pairs[i],idx=currentYelMap.length;
       currentYelMap.push(pair.yelText);
-      html+='<button class="red-btn" data-yi="'+idx+'" title="点击复制答案">'+esc(pair.redText)+'<span class="arrow"> → 复制答案</span></button>';
+      html+='<button class="red-btn" data-yi="'+idx+'">'+esc(pair.redText)+'<span class="arrow"> → 复制答案</span></button>';
     }
     html+='</div></div>';
   }
 
-  /* ===== 文档正文 ===== */
+  /* 正文 */
   for(var i=0;i<d.blocks.length;i++){
     var block=d.blocks[i];
-    if(block.type==='p'){
-      var tag=block.heading?'h'+Math.min(block.heading,6):'p';
-      html+='<'+tag+'>'+renderContent(block.content)+'</'+tag+'>';
-    }else if(block.type==='tbl'){
-      html+='<table>';
-      for(var r=0;r<block.rows.length;r++){
-        html+='<tr>';
-        for(var c=0;c<block.rows[r].length;c++){
-          var tag=r===0?'th':'td',cellHtml='';
-          for(var p=0;p<block.rows[r][c].length;p++)cellHtml+='<p>'+renderContent(block.rows[r][c][p].content)+'</p>';
-          html+='<'+tag+'>'+cellHtml+'</'+tag+'>';
-        }
-        html+='</tr>';
-      }
-      html+='</table>';
-    }else if(block.type==='pagebreak'){
-      html+='<hr style="border:none;border-top:2px dashed #ccc;margin:32px 0">';
-    }
+    if(block.type==='p'){var tag=block.heading?'h'+Math.min(block.heading,6):'p';html+='<'+tag+'>'+renderC(block.content)+'</'+tag+'>'}
+    else if(block.type==='tbl'){html+='<table>';for(var r=0;r<block.rows.length;r++){html+='<tr>';for(var c=0;c<block.rows[r].length;c++){var tag=r===0?'th':'td',ch='';for(var p=0;p<block.rows[r][c].length;p++)ch+='<p>'+renderC(block.rows[r][c][p].content)+'</p>';html+='<'+tag+'>'+ch+'</'+tag+'>'}html+='</tr>'}html+='</table>'}
+    else if(block.type==='pagebreak'){html+='<hr style="border:none;border-top:2px dashed #ccc;margin:32px 0">'}
   }
   readerBody.innerHTML=html||'<p style="color:var(--paper-m);text-align:center;padding:40px">文档内容为空</p>';
-  bindCopyEvents();
+  bindEvents();
 }
 
-function bindCopyEvents(){
-  /* 红色按钮：点击复制对应的黄色内容 */
-  var redBtns=readerBody.querySelectorAll('.red-btn');
-  for(var i=0;i<redBtns.length;i++){
-    (function(btn){
-      btn.addEventListener('click',function(e){
-        e.preventDefault();e.stopPropagation();
-        var idx=parseInt(btn.getAttribute('data-yi'));
-        var text=currentYelMap[idx];
-        if(text==null)return;
-        copyText(text);
-        var arrow=btn.querySelector('.arrow');
-        var origArrow=arrow?arrow.textContent:'';
-        btn.classList.add('copied');
-        if(arrow)arrow.textContent=' 已复制';
-        else{
-          var orig=btn.firstChild&&btn.firstChild.nodeType===3?btn.firstChild.textContent:'';
-          btn.firstChild.textContent=orig+' 已复制';
-        }
-        setTimeout(function(){
-          btn.classList.remove('copied');
-          if(arrow)arrow.textContent=origArrow;
-        },1200);
-      });
-    })(redBtns[i]);
-  }
-  /* 黄色高亮：点击复制自身 */
-  var yelEls=readerBody.querySelectorAll('.yel-copy');
-  for(var i=0;i<yelEls.length;i++){
-    (function(el){
-      el.addEventListener('click',function(){
-        copyText(el.getAttribute('data-text'));
-        el.classList.add('copied');el.textContent='已复制';
-        setTimeout(function(){el.classList.remove('copied');el.textContent=el.getAttribute('data-text')},1200);
-      });
-    })(yelEls[i]);
-  }
+function bindEvents(){
+  /* 红色按钮 */
+  var rbs=readerBody.querySelectorAll('.red-btn');
+  for(var i=0;i<rbs.length;i++){(function(btn){
+    btn.addEventListener('click',function(e){
+      e.preventDefault();e.stopPropagation();
+      var idx=parseInt(btn.getAttribute('data-yi'));
+      var text=currentYelMap[idx];if(text==null)return;
+      copyText(text);
+      var ar=btn.querySelector('.arrow');
+      var oa=ar?ar.textContent:'';
+      btn.classList.add('copied');
+      if(ar)ar.textContent=' 已复制';
+      setTimeout(function(){btn.classList.remove('copied');if(ar)ar.textContent=oa},1200);
+    });
+  })(rbs[i])}
+  /* 黄色高亮 */
+  var ys=readerBody.querySelectorAll('.yel-copy');
+  for(var i=0;i<ys.length;i++){(function(el){
+    el.addEventListener('click',function(){
+      copyText(el.getAttribute('data-text'));
+      el.classList.add('copied');el.textContent='已复制';
+      setTimeout(function(){el.classList.remove('copied');el.textContent=el.getAttribute('data-text')},1200);
+    });
+  })(ys[i])}
 }
 
-function renderContent(content){
+function renderC(content){
   var html='';
   for(var i=0;i<content.length;i++){
     var c=content[i];
     if(c.type==='txt'){
-      var style='';
-      if(c.bold)style+='font-weight:700;';
-      if(c.italic)style+='font-style:italic;';
-      if(c.underline)style+='text-decoration:underline;';
-      if(c.color)style+='color:#'+c.color.replace(/^#/,'')+';';
-      html+=style?'<span style="'+style+'">'+esc(c.text)+'</span>':esc(c.text);
+      var s='';if(c.bold)s+='font-weight:700;';if(c.italic)s+='font-style:italic;';if(c.underline)s+='text-decoration:underline;';if(c.color)s+='color:#'+c.color.replace(/^#/,'')+';';
+      html+=s?'<span style="'+s+'">'+esc(c.text)+'</span>':esc(c.text);
     }else if(c.type==='red'){
-      /*
-       * ★ 核心判断：如果 buildRedYelPairs 已经给这个红色片段写了 yelText
-       * 就渲染为可点击的按钮，否则保持普通红色文字
-       */
+      /* ★ 有 yelText 才变成按钮，否则保持红色文字 */
       if(c.yelText){
         var idx=currentYelMap.length;
         currentYelMap.push(c.yelText);
-        html+='<button class="red-btn" data-yi="'+idx+'" title="点击复制答案">'+esc(c.text)+'</button>';
+        html+='<button class="red-btn" data-yi="'+idx+'">'+esc(c.text)+'</button>';
       }else{
         html+='<span class="red-text">'+esc(c.text)+'</span>';
       }
     }else if(c.type==='yel'){
-      html+='<span class="yel-copy" data-text="'+attrEsc(c.text)+'" title="点击复制">'+esc(c.text)+'</span>';
-    }else if(c.type==='img'){
-      html+='<img src="'+c.src+'" alt="图片">';
-    }else if(c.type==='br'){
-      html+='<br>';
-    }else if(c.type==='tab'){
-      html+='&emsp;';
-    }else if(c.type==='pagebreak'){
-      html+='<hr style="border:none;border-top:2px dashed #ccc;margin:24px 0">';
-    }
+      html+='<span class="yel-copy" data-text="'+attrEsc(c.text)+'">'+esc(c.text)+'</span>';
+    }else if(c.type==='img'){html+='<img src="'+c.src+'" alt="图片">'}
+    else if(c.type==='br'){html+='<br>'}
+    else if(c.type==='tab'){html+='&emsp;'}
+    else if(c.type==='pagebreak'){html+='<hr style="border:none;border-top:2px dashed #ccc;margin:24px 0">'}
   }
   return html;
 }
 
 function copyText(text){
-  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).catch(function(){fallbackCopy(text)})}
-  else{fallbackCopy(text)}
-  toast('已复制到剪贴板','ok');
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).catch(function(){fbCopy(text)})}
+  else{fbCopy(text)}toast('已复制到剪贴板','ok');
 }
-function fallbackCopy(text){
-  var ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();
-}
+function fbCopy(text){var ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove()}
 
 renderFileList();
 }
